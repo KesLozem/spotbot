@@ -27,8 +27,8 @@ app.use(express.static(path.join(__dirname + '/public' + '/build')))
 app.get('/', (req, res) => res.send('Hello World!'));   
 app.use('/api', routes);
 
-httpServer.listen(8080, () => {
-    console.log('listening on *:8080');
+httpServer.listen(8888, () => {
+    console.log('listening on *:8888');
 });
 
 module.exports = {
