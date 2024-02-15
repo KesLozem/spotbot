@@ -1,3 +1,5 @@
-const loginController = require('../controllers/login.controller.js');
+const authController = require('./auth.controller.js');
+const roomController = require('./room.controller.js');
 
-exports.loginController = loginController;
+exports.authController = authController;
+exports.roomController = roomController;
