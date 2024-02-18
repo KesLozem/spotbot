@@ -1,5 +1,6 @@
 const axios = require('axios');
 querystring = require('querystring');
+require('dotenv').config();
 
 client_id = process.env.CLIENT_ID; // Your client id
 const client_secret = process.env.CLIENT_SECRET; // Your secret
