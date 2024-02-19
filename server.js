@@ -12,6 +12,7 @@ const { instrument } = require("@socket.io/admin-ui");
 // Routes
 const authRoutes = require('./routes/auth.js');
 const roomRoutes = require('./routes/room_controls.js');
+const playbackRoutes = require('./routes/playback.js');
 
 // socket io 
 const { createServer } = require("http"); // SocketIO dependency

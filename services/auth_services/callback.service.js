@@ -1,5 +1,6 @@
 const axios = require('axios');
 const querystring = require('querystring');
+require('dotenv').config();
 
 const client_secret = process.env.CLIENT_SECRET; // Your secret
 const redirect_uri = process.env.REDIRECT_URI; // Your redirect uri

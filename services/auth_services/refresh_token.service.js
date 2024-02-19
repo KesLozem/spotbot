@@ -1,5 +1,6 @@
 const axios = require('axios');
 querystring = require('querystring');
+require('dotenv').config();
 
 client_id = process.env.CLIENT_ID; // Your client id
 const client_secret = process.env.CLIENT_SECRET; // Your secret
@@ -20,9 +21,9 @@ const refresh = async (req, res) => {
   };
 
   axios(authOptions)
-    .then(function (error, response, body) {
-      if (!error && response.statusCode === 200) {
-        let access_token = body.access_token;
+    .then(function (response) {
+      if (response.status === 200) {
+        let access_token = response.data.access_token;
         res.send({
           'access_token': access_token
         });
