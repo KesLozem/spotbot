@@ -7,6 +7,7 @@ const { instrument } = require("@socket.io/admin-ui");
 const app = express();
 const authRoutes = require('./routes/auth.js');
 const roomRoutes = require('./routes/room_controls.js');
+const playbackRoutes = require('./routes/playback.js');
 
 // socket io 
 const { createServer } = require("http"); // SocketIO dependency
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname + '/client' + '/build')))
 app.get('/', (req, res) => res.send('Hello World!'));   
 app.use('/api/auth', authRoutes);
 app.use('/api/room', roomRoutes);
+app.use('/api/playback', playbackRoutes);
 
 httpServer.listen(8080, () => {
     console.log('listening on *:8080');
