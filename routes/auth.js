@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-// Import controllers
+// Import auth.controller.js
 const {authController} = require('../controllers');
 
 // Login routes

@@ -17,7 +17,9 @@ const authCallback = async (req, res) => {
     try {
         const userTokens = await callback(req, res);
         storeAuth(userTokens, res);
-        console.log(auth_list);
+        console.log(auth_list); //maybe better pass authlist straight to sever to compare
+        //if user is already logged is assigned a room, need room number stored in db.
+        //can store as json owner of room. when rejoins with id, io connect to room stored in DB.
     } catch (error) {
         res.status(500).send(`Error: ${error}`);
         console.log(error);
