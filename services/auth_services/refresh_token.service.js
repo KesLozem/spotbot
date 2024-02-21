@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { setAuth, getRefresh } = require('./store_auth.service');
 querystring = require('querystring');
 require('dotenv').config();
 
@@ -8,7 +9,8 @@ const redirect_uri = process.env.REDIRECT_URI; // Your redirect uri
 
 const refresh = async (req, res) => {
   // requesting access token from refresh token
-  let refresh_token = req.query.refresh_token;
+  
+  let refresh_token = getRefresh();
   let authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     method: 'post',
@@ -24,9 +26,11 @@ const refresh = async (req, res) => {
     .then(function (response) {
       if (response.status === 200) {
         let access_token = response.data.access_token;
-        res.send({
+        setAuth(access_token)
+        console.log({
           'access_token': access_token
         });
+        res.redirect("http://localhost:8080/")
       }
     })
     .catch(function (error) {

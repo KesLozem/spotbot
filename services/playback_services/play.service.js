@@ -1,10 +1,11 @@
 const axios = require('axios');
+const { getAuth } = require('../auth_services/store_auth.service');
 
 const play = async (req, res) => {
 
     try {
         // your application requests authorization
-        let access_token = req.query.access_token;
+        let access_token = getAuth();
         let authOptions = {
             url: 'https://api.spotify.com/v1/me/player/play',
             method: 'put',
@@ -15,8 +16,8 @@ const play = async (req, res) => {
         axios(authOptions)
         .then(function (response) {
         if (response.status === 204) {
-            res.send("Resumed");
             console.log("Playback resumed.");
+            res.redirect("http://localhost:8080/");
         }
         })
         .catch(function (error) {
