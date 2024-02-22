@@ -20,7 +20,8 @@ const login = async (req, res) => {
         // your application requests authorization
         const state = generateRandomString(16);
         res.cookie(stateKey, state);
-        const scope = 'user-read-private user-read-currently-playing user-modify-playback-state streaming user-read-playback-state';
+        const scope = 'user-read-private user-read-currently-playing user-modify-playback-state streaming'
+        + ' user-read-playback-state playlist-read-private playlist-modify-private playlist-modify-public';
         res.redirect('https://accounts.spotify.com/authorize?' +
             querystring.stringify({
                 response_type: 'code',
