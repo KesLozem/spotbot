@@ -1,5 +1,8 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+require('dotenv').config();
+
+const user_id = process.env.USER_ID;
 
 const create = async (req, res) => {
 
@@ -7,7 +10,7 @@ const create = async (req, res) => {
         // your application requests authorization
         let access_token = getAuth();
         let authOptions = {
-            url: 'https://api.spotify.com/v1/users/gmom8jiyb0bjugwah1nn12irr/playlists',
+            url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists',
             method: 'post',
             headers: { 
                 'Authorization': 'Bearer ' + access_token,
