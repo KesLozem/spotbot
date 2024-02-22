@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+const { setId } = require('./storeID.service');
 require('dotenv').config();
 
 const user_id = process.env.USER_ID;
@@ -27,7 +28,9 @@ const create = async (req, res) => {
         axios(authOptions)
         .then(function (response) {
         if (response.status === 201) {
-            console.log("Created Playlist");
+            id = response.data.uri.split(':')[2]
+            console.log(`Created Playlist\n ID: ${id}`);
+            setId(id);
             res.redirect("http://localhost:8080/");
         }
         })
