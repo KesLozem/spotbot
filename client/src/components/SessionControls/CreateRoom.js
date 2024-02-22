@@ -18,6 +18,8 @@ function CreateRoom() {
             <button><a href="/api/playback/play">PLAY</a></button>
             <button><a href="/api/playback/state">PLAYBACK STATUS</a></button>
             <button><a href="/api/playback/track">CURRENT TRACK</a></button>
+            <button><a href="/api/playback/next">SKIP</a></button>
+            <button><a href="/api/playback/previous">SKIP PREVIOUS</a></button>
         </div>
     )
 }

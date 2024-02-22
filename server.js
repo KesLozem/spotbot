@@ -46,6 +46,7 @@ app.use(express.static(path.join(__dirname + '/client' + '/build')))
 app.get('/', (req, res) => res.send('Hello World!'));   
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/playback', playbackRoutes);
 
 httpServer.listen(8080, () => {
     console.log('listening on *:8080');
