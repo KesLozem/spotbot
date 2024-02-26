@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+const { clearResults, addResult } = require('./storeResults.service');
 const NUM_DESIRED_RESULTS = 5;
 
 
@@ -33,15 +34,22 @@ const search = async (req, res) => {
         if (response.status === 200) {
             tracks = response.data.tracks
             console.log(response.data);
+            clearResults();
             tracks.items.forEach( track => {
-                const artists = track.artists.slice(1).reduce( 
-                    (acc, artist) => acc + `, ${artist.name}`,
-                    `${track.artists[0].name}`
-                )
+                var artists;
+                try {
+                    artists = track.artists.slice(1).reduce( 
+                        (acc, artist) => acc + `, ${artist.name}`,
+                        `${track.artists[0].name}` 
+                    )
+                } catch (error) {
+                    arists = 'None';
+                }
                 console.log(`
                 Name: ${track.name}
                 Artist(s): ${artists}
                 Spotify URI: ${track.uri}`)
+                addResult(track.uri)
             });
             res.redirect("http://localhost:8080/");
         }
