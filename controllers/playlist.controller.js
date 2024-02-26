@@ -1,5 +1,6 @@
 const { create } = require("../services/playlist_services/create.service");
 const { playlist } = require("../services/playlist_services/getPlaylist.service");
+const { userPlaylists } = require("../services/playlist_services/getUserPlaylists.service");
 
 const newPlaylist = async (req, res) => {
     try {
@@ -17,7 +18,16 @@ const getPlaylist = async (req, res) => {
     }
 }
 
+const getUserPlaylists = async (req, res) => {
+    try {
+        userPlaylists(req, res);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     newPlaylist,
-    getPlaylist
+    getPlaylist,
+    getUserPlaylists
 }
