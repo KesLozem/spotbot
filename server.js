@@ -37,6 +37,8 @@ instrument(io, {
 
 // Room_services
 const { createRoom } = require('./services/room_services/createRoom.service.js');
+const { slackApp } = require('./bot.js');
+require('dotenv').config;
 
 
 app.use(express.static(path.join(__dirname + '/client' + '/build')))
@@ -51,6 +53,7 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/playback', playbackRoutes);
 app.use('/api/playlist', playlistRoutes);
 app.use('/api/search', searchRoutes)
+
 
 httpServer.listen(8080, () => {
     console.log('listening on *:8080');
@@ -80,6 +83,13 @@ io.on('connection', socket => {
   });
 
 });
+
+(async () => {
+  // Start your app
+  await slackApp.start();
+
+  console.log('⚡️ Bolt app is running!');
+})();
 
 module.exports = {
     app
