@@ -16,7 +16,7 @@ const search = async (req, res) => {
             query = query.replace(/ /g || '+', '%20');
         } catch (error) {console.log(error)}
 
-        search_aux(query); // pass api call to spotify using extracted query
+        await search_aux(query); // pass api call to spotify using extracted query
 
         res.redirect("http://localhost:8080/");
 

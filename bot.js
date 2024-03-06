@@ -2,6 +2,7 @@ const { App } = require('@slack/bolt');
 const { search_aux } = require('./services/search_services/search.service');
 const { format_search } = require('./bot_aux');
 const { query } = require('express');
+const { add_aux } = require('./services/playlist_services/addTrack.service');
 require('dotenv').config();
 
 
@@ -46,46 +47,79 @@ slackApp.message('search', async ({ message, say }) => {
 })
 
 slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
-    await ack();
     // respond to search buttons
+
+
+    await ack();
     console.log(body.actions)
     console.log(body.message)
 
-    // get selected number
-    const selected = body.actions[0].action_id[7];
-    const selected_int = Number(selected)
+    // get track uri
+    const uri = body.actions[0].value
 
-    // extract track name and artist
-    const track_name = body.message.blocks[selected_int].fields[0].text.split('\n')[1];
-    const track_artists = body.message.blocks[selected_int].fields[1].text.split('\n')[1]
-    
-    // Update original message to reflect button press
-    try{
-        await client.chat.update({
-            "channel": body.channel.id,
-            "ts": body.message.ts,
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "plain_text",
-                        "text":  `Queued song: ${track_name}`,
-                        "emoji": true
-                    }
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {
-                            "type": "mrkdwn",
-                            "text": `Artist(s): ${track_artists}`
+    // try to queue uri, get response
+    const response = await add_aux(uri);
+
+    // Update response based on whether song was queued
+    if (response === 201) {
+        // 201 means song was queued successfully
+
+        // get selected number
+        const selected = body.actions[0].action_id[7];
+        const selected_int = Number(selected)
+
+        // extract track name and artist
+        const track_name = body.message.blocks[selected_int].fields[0].text.split('\n')[1];
+        const track_artists = body.message.blocks[selected_int].fields[1].text.split('\n')[1]
+        
+        // Update original message to reflect button press
+        try{
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "plain_text",
+                            "text":  `Queued song: ${track_name}`,
+                            "emoji": true
                         }
-                    ]
-                }
-            ]
-        })
-    } catch (error) {
-        logger.error(error);
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": `Artist(s): ${track_artists}`
+                            }
+                        ]
+                    }
+                ]
+            })
+        } catch (error) {
+            logger.error(error);
+        }
+    } else {
+        // Otherwise update message to reflect error code
+        try {
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": `Error queueing track - error code: ${response}`,
+                            "emoji": true
+                        }
+                    }
+                ]
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
 });
 
