@@ -1,25 +1,38 @@
 import React from "react";
-import logo from "../../logo.svg";
-import SessionControls from "../SessionControls/CreateRoom.js";
+import "./Home.css";
+import SideBar from "../SideBar/SideBar";
 
-function Home() {
+function Home({
+    username,
+    allUsers,
+    messages,
+    message,
+    handleMessageChange,
+    sendMessage,
+    joinRoom,
+    allRooms,
+    room,
+    socketID,
+    createRoom,
+    handleUsernameChange,
+}) {
     return (
-        <div className="App">
-        <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-            Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            >
-            Learn React
-            </a>
-            <SessionControls />
-        </header>
+        <div className="container">
+            <div className="player">
+                AJJSJS
+            </div>
+            <div className="sidebar">                
+                <SideBar 
+                    username={username}
+                    allUsers={allUsers}
+                    messages={messages}
+                    allRooms={allRooms}
+                    room={room}
+                    createRoom={createRoom}
+                    handleUsernameChange={handleUsernameChange}
+                />
+            </div>
+            <div className="queue"></div>
         </div>
     )       
 }

@@ -1,6 +1,5 @@
-const generateRandomString = require('../../utils');
+const generateRandomString = require('../../utils/').generateRandomString;
 const querystring = require('querystring');
-require('dotenv').config();
 
 const client_id = process.env.CLIENT_ID; // Your client id
 const redirect_uri = process.env.REDIRECT_URI; // Your redirect uri
@@ -12,7 +11,6 @@ const redirect_uri = process.env.REDIRECT_URI; // Your redirect uri
  */
 
 let stateKey = 'spotify_auth_state';
-let authToken = '';
 
 const login = async (req, res) => {
 
@@ -20,7 +18,8 @@ const login = async (req, res) => {
         // your application requests authorization
         const state = generateRandomString(16);
         res.cookie(stateKey, state);
-        const scope = 'user-read-private user-read-currently-playing user-modify-playback-state streaming user-read-playback-state';
+        const scope = 'user-read-private user-read-currently-playing user-modify-playback-state streaming'
+        + ' user-read-playback-state playlist-read-private playlist-modify-private playlist-modify-public';
         res.redirect('https://accounts.spotify.com/authorize?' +
             querystring.stringify({
                 response_type: 'code',

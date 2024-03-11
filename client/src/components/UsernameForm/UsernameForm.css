@@ -1,0 +1,87 @@
+.show-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -75px;
+    background: #6ee251;
+    color: #fff;
+    border-radius: 5px;
+    border: 0;
+    cursor: pointer;
+  }
+  
+  .show-modal:hover {
+    background: #2068cd;
+  }
+  
+  .show-modal:active {
+    transform: scale(0.9);
+  }
+  
+  .close-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 30px;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    border: 0;
+  }
+  
+  .mask-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: #ffffff;
+    opacity: 0.8;
+    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #ffffff 14px ), repeating-linear-gradient( #dad2d255, #dad2d2 );    opacity: 1; */
+    transition: 0.7s;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 200px;
+    margin-left: -200px;
+    margin-top: -150px;
+    background: #191414;
+    color: #ffffff;
+    z-index: 100;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.5s ease-out;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .username-input {
+    width: 200px;
+    height: 20px;
+    margin-bottom: 20px;
+    padding: 5px;
+    border: 0;
+    border-radius: 0px;
+    outline: none;
+  }
+
+  .username-submit {
+    width: 100px;
+    height: 30px;
+    background: #5c5a5a;
+    color: #fff;
+    border: 0;
+    border-radius: 0px;
+    cursor: pointer;
+  }
