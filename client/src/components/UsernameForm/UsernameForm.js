@@ -9,6 +9,12 @@ function UsernameForm({ handleUsernameChange, handleConnect }) {
     const showModal = () => setIsModalVisible(true);
     const hideModal = () => setIsModalVisible(false);
 
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            handleConnect();
+        }
+    }
+
     return (
         <div>
             <button className="show-modal" onClick={showModal}>
@@ -25,6 +31,7 @@ function UsernameForm({ handleUsernameChange, handleConnect }) {
                                 type="text" 
                                 placeholder="Username..."
                                 onChange={handleUsernameChange}
+                                onKeyDown={handleKeyPress}
                             />
                         </span>
                         <span><button className="username-submit" onClick={handleConnect}>Submit</button></span>
