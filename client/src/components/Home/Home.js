@@ -1,6 +1,7 @@
 import React from "react";
 import "./Home.css";
 import SideBar from "../SideBar/SideBar";
+import WebPlayback from "../WebPlayback/WebPlayback";
 
 function Home({
     username,
@@ -15,11 +16,13 @@ function Home({
     socketID,
     createRoom,
     handleUsernameChange,
+    isAdmin
 }) {
     return (
         <div className="container">
             <div className="player">
-                AJJSJS
+
+                {isAdmin ? <WebPlayback /> : <p>Not Admin</p>}
             </div>
             <div className="sidebar">                
                 <SideBar 

@@ -8,6 +8,7 @@ import EnterUsername from './components/UsernameForm/UsernameForm.js';
 
 function App() {
   const [username, setUsername] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [adminId, setAdminId] = useState('');
   const [allUsers, setAllUsers] = useState([]);
   const [connected, setConnected] = useState(false);
@@ -34,12 +35,12 @@ function App() {
     setConnected(true);
     socketRef.current.emit('check-host', (res) => {
       console.log(res);
-      if (res.users === 0 && res.auth_token === null) {
-        console.log(res.users, res.auth_token);
-      }
-      else if (res.auth_token !== null) {
-        setAuth_token(res.auth_token);
+      if (res.users === 0) {
         setAdminId(res.adminId);
+        setIsAdmin(true);
+      }
+      if (res.auth_token !== null) {
+        setAuth_token(res.auth_token);
       }
     });
   }, []);
@@ -131,6 +132,7 @@ function App() {
                 socketID={socketRef.current.id}
                 createRoom={createRoom}
                 handleUsernameChange={handleUsernameChange}
+                isAdmin={isAdmin}
               />
             } />
           </Routes>
