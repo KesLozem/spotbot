@@ -3,6 +3,7 @@ const { search_aux } = require('./services/search_services/search.service');
 const { format_search } = require('./bot_aux');
 const { query } = require('express');
 const { add_aux } = require('./services/playlist_services/addTrack.service');
+const { get_tracks } = require('./services/playlist_services/getPlaylist.service');
 require('dotenv').config();
 
 
@@ -36,7 +37,8 @@ slackApp.message('search', async ({ message, say }) => {
             const query = message.text.slice(7);
             const search_res = await(search_aux(query));
             const res = format_search(search_res, query);    
-            await say(res)
+            await say(res);
+            console.log(res);
             
         }
 
@@ -123,17 +125,45 @@ slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
     }
 });
 
-slackApp.command('/skip', async ({command, ack, say}) => {
-    await ack();
-    console.log(command)
-    await say(`${command}`);
-});
+slackApp.message('queue', async ({message, say})=> {
 
-slackApp.command('/search', async ({command, ack, say}) => {
-    await ack();
-    console.log(command)
-    await say(`${command}`);
-});
+    res = {
+        "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": `Current Queue: `,
+                "emoji": true
+            }
+        }
+        ]
+    }
+
+    let tracks = await get_tracks();
+    tracks.items.forEach(track => {
+        console.log(track.track.name)
+        res.blocks.push(
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": `${track.track.name} `
+                    }
+                ]
+            }
+        )
+    });
+
+    console.log(res);
+    await say(res);
+
+
+
+})
+
+
 
 module.exports = {slackApp}
 
