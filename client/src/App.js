@@ -41,6 +41,9 @@ function App() {
       }
       if (res.auth_token !== null) {
         setAuth_token(res.auth_token);
+        //TODO: Logic for auth token for a specific room:
+        //      allow connect to namespace '/' then ask for login
+        //      upon joining a room. Each room has different token.
       }
     });
   }, []);
