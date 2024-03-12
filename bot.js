@@ -6,6 +6,8 @@ const { playlist_tracks } = require('./services/playlist_services/getPlaylist.se
 const { pause_api_call } = require('./services/playback_services/pause.service');
 const { play_api_call } = require('./services/playback_services/play.service');
 const { find_pos } = require('./services/playlist_services/playlist_utils');
+const { skip_api_call } = require('./services/playback_services/skip.service');
+const { get_track } = require('./services/playback_services/currentTrack.service');
 require('dotenv').config();
 
 
@@ -210,6 +212,35 @@ slackApp.message('play', async ({message, say}) => {
             await say("Playback resumed");
         } else {
             await say(`Error - code: ${response}`);
+        }
+    }
+})
+
+slackApp.message('skip', async ({message, say}) => {
+    // Skip current track by sending "skip"
+
+    // Only allow message that is just 'skip' (allowing for spaces)
+    if (message.text.trim() === 'skip') {
+
+        // Make spotify API call to skip
+        let response = await skip_api_call();
+
+        // check if successfully skipped
+        if (response.status === 204) {
+            await new Promise(r => setTimeout(r, 200));
+            // If so, try get new playing song
+            let playing_res = await get_track()
+            if (playing_res.status === 200) {
+                // return name of song and successful skip
+                await say(`Successfully skipped. Now Playing: ${playing_res.data.item.name}`)
+            } else {
+                // otherwise alert of error
+                await say(`Successfully skipped current track. However, issue occurred getting new track - code ${playing_res.status}`)
+            }
+
+        } else {
+            // otherwise say error code
+            await say(`Error - code: ${response.status}`)
         }
     }
 })
