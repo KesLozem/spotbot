@@ -53,6 +53,9 @@ let search_aux = async ( query ) => {
         // return extracted response
         return await extract_response(response);
     } catch (error) {
+        if ('response' in error) {
+            return error.response;
+        }
         console.log(error);
     }
 }

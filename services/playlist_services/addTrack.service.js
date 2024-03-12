@@ -47,6 +47,12 @@ const add_aux = async (uri) => {
             console.log(response.data);
         }
         return response.status
+    }).catch( (error) => {
+        if ('response' in error) {
+            return error.response.status
+        } else {
+            console.log(error)
+        }
     })
     
     

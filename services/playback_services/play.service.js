@@ -28,12 +28,19 @@ const play_api_call = async () => {
             json: true
         };
 
+        
         // return whether API call was successful
         let response = await axios(authOptions)
+        console.log(response.status)
         return response.status
+
         
     } catch (error) {
-        console.log(error);
+        if ('response' in error) {
+            return error.response.status;
+        } else{
+            console.log(error);
+        }
     }
 }
 

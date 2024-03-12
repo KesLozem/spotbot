@@ -38,10 +38,13 @@ slackApp.message('search', async ({ message, say }) => {
             // Extract query and search spotify API
             const query = message.text.slice(7);
             const search_res = await(search_aux(query));
-            const res = format_search(search_res, query);    
-            await say(res);
-            console.log(res);
-            
+            if ('status' in search_res) {
+                await say(`Error - code: ${search_res.status}`);
+            } else {
+                const res = format_search(search_res, query);    
+                await say(res);
+                console.log(res);
+            }
         }
 
     } catch (error) {
@@ -194,7 +197,7 @@ slackApp.message('pause', async ({message, say}) => {
         if (response === 204) {
             await say("Playback paused");
         } else {
-            await say(`Error - code: response`);
+            await say(`Error - code: ${response}`);
         }
     }
 })
@@ -206,7 +209,7 @@ slackApp.message('play', async ({message, say}) => {
         if (response === 204) {
             await say("Playback resumed");
         } else {
-            await say(`Error - code: response`);
+            await say(`Error - code: ${response}`);
         }
     }
 })
