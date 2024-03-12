@@ -18,6 +18,7 @@ Spotbot rebuild:
     REDIRECT_URI
     USER_ID 
     DEFAULT_PLAYLIST_ID 
+    DEFAULT_DEVICE_ID
 
     for Slack:
 
