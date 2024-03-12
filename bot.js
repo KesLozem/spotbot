@@ -1,9 +1,10 @@
 const { App } = require('@slack/bolt');
 const { search_aux } = require('./services/search_services/search.service');
 const { format_search } = require('./bot_aux');
-const { query } = require('express');
 const { add_aux } = require('./services/playlist_services/addTrack.service');
 const { get_tracks } = require('./services/playlist_services/getPlaylist.service');
+const { pause_api_call } = require('./services/playback_services/pause.service');
+const { play_api_call } = require('./services/playback_services/play.service');
 require('dotenv').config();
 
 
@@ -126,44 +127,66 @@ slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
 });
 
 slackApp.message('queue', async ({message, say})=> {
-
-    res = {
-        "blocks": [
-        {
-            "type": "header",
-            "text": {
-                "type": "plain_text",
-                "text": `Current Queue: `,
-                "emoji": true
-            }
-        }
-        ]
-    }
-
-    let tracks = await get_tracks();
-    tracks.items.forEach(track => {
-        console.log(track.track.name)
-        res.blocks.push(
+    // get current queue if message is exactly "queue" (allowing for spaces on either side)
+    if (message.text.trim() === 'queue') {
+        res = {
+            "blocks": [
             {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": `${track.track.name} `
-                    }
-                ]
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": `Current Queue: `,
+                    "emoji": true
+                }
             }
-        )
-    });
+            ]
+        }
 
-    console.log(res);
-    await say(res);
+        let tracks = await get_tracks();
+        tracks.items.forEach(track => {
+            console.log(track.track.name)
+            res.blocks.push(
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": `${track.track.name} `
+                        }
+                    ]
+                }
+            )
+        });
 
-
-
+        console.log(res);
+        await say(res);
+    }
 })
 
+slackApp.message('pause', async ({message, say}) => {
+    // pause playback when message is just "pause"
+    console.log(message)
+    if (message.text.trim() === 'pause') {
+        let response = await pause_api_call();
+        if (response === 204) {
+            await say("Playback paused");
+        } else {
+            await say(`Error - code: response`);
+        }
+    }
+})
 
+slackApp.message('play', async ({message, say}) => {
+    // resume playback when message is just "play"
+    if (message.text.trim() === 'play') {
+        let response = await play_api_call();
+        if (response === 204) {
+            await say("Playback resumed");
+        } else {
+            await say(`Error - code: response`);
+        }
+    }
+})
 
 module.exports = {slackApp}
 
