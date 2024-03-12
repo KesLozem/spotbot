@@ -136,6 +136,7 @@ function App() {
                 createRoom={createRoom}
                 handleUsernameChange={handleUsernameChange}
                 isAdmin={isAdmin}
+                auth_token={auth_token}
               />
             } />
           </Routes>

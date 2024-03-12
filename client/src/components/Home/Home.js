@@ -16,13 +16,17 @@ function Home({
     socketID,
     createRoom,
     handleUsernameChange,
-    isAdmin
+    isAdmin,
+    auth_token
 }) {
     return (
         <div className="container">
             <div className="player">
 
-                {isAdmin ? <WebPlayback /> : <p>Not Admin</p>}
+                {isAdmin ? 
+                <WebPlayback 
+                    auth_token={auth_token}
+                /> : <p>Not Admin</p>}
             </div>
             <div className="sidebar">                
                 <SideBar 

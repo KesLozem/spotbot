@@ -1,5 +1,6 @@
 const {pause} = require('../services/playback_services/pause.service');
 const {play} = require('../services/playback_services/play.service');
+const {putDeviceID} = require('../services/playback_services/putDeviceID.service');
 
 const pausePlayback = (req, res) => {
     try {
@@ -17,7 +18,16 @@ const resumePlayback = (req, res) => {
     }
 }
 
+const setDeviceID = (req, res) => {
+    try {
+        putDeviceID(req, res);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     pausePlayback,
-    resumePlayback
+    resumePlayback,
+    setDeviceID
 }
