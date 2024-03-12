@@ -71,6 +71,20 @@ const format_search = (tracks, query) => {
     } else {
         // Otherwise add in the buttons
         res.blocks.push(buttons);
+        res.blocks.push({
+            "type": "actions",
+            "elements": [{
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "emoji": true,
+                    "text": `Cancel`
+                },
+                "style": "danger",
+                "value": "cancel",
+                "action_id": `cancel_button`                
+            }]
+        })
     }
     
     return res;

@@ -2,9 +2,10 @@ const { App } = require('@slack/bolt');
 const { search_aux } = require('./services/search_services/search.service');
 const { format_search } = require('./bot_aux');
 const { add_aux } = require('./services/playlist_services/addTrack.service');
-const { get_tracks } = require('./services/playlist_services/getPlaylist.service');
+const { playlist_tracks } = require('./services/playlist_services/getPlaylist.service');
 const { pause_api_call } = require('./services/playback_services/pause.service');
 const { play_api_call } = require('./services/playback_services/play.service');
+const { find_pos } = require('./services/playlist_services/playlist_utils');
 require('dotenv').config();
 
 
@@ -48,6 +49,28 @@ slackApp.message('search', async ({ message, say }) => {
     }
     
 })
+
+slackApp.action( "cancel_button" , async ({ body, ack, client, logger }) => {
+    // cancel button
+    await ack();
+
+    try{
+        await client.chat.update({
+            "channel": body.channel.id,
+            "ts": body.message.ts,
+            "blocks": [{
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text":  `Search Cancelled`,
+                    "emoji": true
+                }
+            }]
+        })
+    } catch (error) {
+        console.log(error)
+    }
+});
 
 slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
     // respond to search buttons
@@ -142,7 +165,7 @@ slackApp.message('queue', async ({message, say})=> {
             ]
         }
 
-        let tracks = await get_tracks();
+        let tracks = await playlist_tracks();
         tracks.items.forEach(track => {
             console.log(track.track.name)
             res.blocks.push(
@@ -186,6 +209,13 @@ slackApp.message('play', async ({message, say}) => {
             await say(`Error - code: response`);
         }
     }
+})
+
+// Command for testing purposes only
+slackApp.message('test', async ({message, say}) => {
+    const tracks = await playlist_tracks();
+    const pos = find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd", tracks.items);
+    await say(`position: ${pos}`);
 })
 
 module.exports = {slackApp}
