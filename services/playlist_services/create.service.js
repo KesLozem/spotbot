@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
-const { setId } = require('./storeID.service');
+const { setId } = require('./playlist_utils');
 require('dotenv').config();
 
 const user_id = process.env.USER_ID;

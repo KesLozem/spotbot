@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
-const { getId } = require('./storeID.service');
+const { getId } = require('./playlist_utils');
 
 
 const addItem = async (req, res) => {
