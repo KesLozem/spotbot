@@ -58,6 +58,13 @@ let users = [];
 let listeners = [];
 let messages = [];
 messages['general'] = [];
+let playbackState = [];
+let ms = 0;
+let msInterval;
+
+function incrementMs() {
+  ms += 1000;
+}
 
 // Connection is made to server from client
 io.on('connection', socket => {
@@ -106,6 +113,12 @@ io.on('connection', socket => {
       listeners[roomName] = [username];
     }
     io.to(roomName).emit('user-joined', listeners[roomName]);
+    // send current playback state to new user + ms interval from last update
+    if (playbackState[roomName]) {
+      let statePayload = {...playbackState[roomName]};
+      statePayload.progress += ms;
+      io.to(socket.id).emit('new-webPlaybackState', statePayload);
+    }
     io.to(roomName).emit('send-message', { message: `${username} has joined the party!`, sender: 'SPOTBOT', room: roomName });
   });
 
@@ -127,7 +140,20 @@ io.on('connection', socket => {
   });
   
   socket.on('webPlaybackState', (state, room) => {
+    playbackState[room] = state;
+
+    // state is sent through on pause so we can use that to clear interval
+    if (msInterval || state.is_paused) {
+      clearInterval(msInterval);
+      ms = 0;
+    }
     io.to(room).emit('new-webPlaybackState', state);
+
+    // from unpause start interval again to ensure future state of late
+    // joiners are matching
+    if (!state.is_paused) {
+      msInterval = setInterval(incrementMs, 1000);
+    }
   });
 
   // Host leaves room

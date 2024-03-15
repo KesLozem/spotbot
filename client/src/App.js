@@ -94,6 +94,7 @@ function App() {
 
     socketRef.current.on('new-webPlaybackState', (state) => {
       console.log("RECEIVED_PLAYBACK_STATE", state);
+      setWebPlaybackState(state);
     });
 
     socketRef.current.on('user-left', (users, message) => {
@@ -170,6 +171,7 @@ function App() {
                 isAdmin={isAdmin}
                 auth_token={auth_token}
                 sendWebPlaybackState={sendWebPlaybackState}
+                webPlaybackState={webPlaybackState}
               />
             } />
           </Routes>

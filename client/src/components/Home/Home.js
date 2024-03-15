@@ -2,6 +2,7 @@ import React from "react";
 import "./Home.css";
 import SideBar from "../SideBar/SideBar";
 import WebPlayback from "../WebPlayback/WebPlayback";
+import ClientPlayback from "../ClientPlayback/ClientPlayback";
 
 function Home({
     username,
@@ -18,7 +19,8 @@ function Home({
     handleUsernameChange,
     isAdmin,
     auth_token,
-    sendWebPlaybackState
+    sendWebPlaybackState,
+    webPlaybackState
 }) {
     return (
         <div className="container">
@@ -28,7 +30,9 @@ function Home({
                 <WebPlayback 
                     auth_token={auth_token}
                     sendWebPlaybackState={sendWebPlaybackState}
-                /> : <p>Not Admin</p>}
+                /> : <ClientPlayback 
+                    webPlaybackState={webPlaybackState}
+                />}
             </div>
             <div className="sidebar">                
                 <SideBar 

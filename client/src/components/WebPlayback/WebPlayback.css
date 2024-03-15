@@ -3,7 +3,7 @@
     --button-color: rgb(255, 255, 255);
 }
 
-img {
+.now-playing__cover {
     width: 50%;
     height: 50%;
     object-fit: cover;
