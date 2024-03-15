@@ -17,7 +17,8 @@ function Home({
     createRoom,
     handleUsernameChange,
     isAdmin,
-    auth_token
+    auth_token,
+    sendWebPlaybackState
 }) {
     return (
         <div className="container">
@@ -26,6 +27,7 @@ function Home({
                 {isAdmin ? 
                 <WebPlayback 
                     auth_token={auth_token}
+                    sendWebPlaybackState={sendWebPlaybackState}
                 /> : <p>Not Admin</p>}
             </div>
             <div className="sidebar">                
@@ -39,7 +41,9 @@ function Home({
                     handleUsernameChange={handleUsernameChange}
                 />
             </div>
-            <div className="queue"></div>
+            <div className="queue">
+                QUEUE
+            </div>
         </div>
     )       
 }

@@ -126,6 +126,10 @@ io.on('connection', socket => {
     io.to(room).emit('message', messages[room]);
   });
   
+  socket.on('webPlaybackState', (state, room) => {
+    io.to(room).emit('new-webPlaybackState', state);
+  });
+
   // Host leaves room
   socket.on('host-leave-room', (roomName) => {
     // console.log(`host left room: ${roomName}`);

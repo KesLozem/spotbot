@@ -21,6 +21,29 @@ function App() {
   const [auth_token, setAuth_token] = useState('');
   const [userCount, setUserCount] = useState(0);
 
+  // Webplayback State
+  const WebPlayback = {
+    is_paused: false,
+    is_active: false,
+    isLoading: true,
+    current_track: {
+      name: "",
+      album: {
+        images: [
+          { url: "" }
+        ]
+      },
+      artists: [
+        { name: "" }
+      ]
+    },
+    progress: 0,
+    durationms: 0,
+    duration: "00:00",
+    currentTime: "00:00"
+  }
+  const [webPlaybackState, setWebPlaybackState] = useState(WebPlayback);
+
   useEffect(() => {
     setMessage('');
   }, [messages]);
@@ -69,6 +92,10 @@ function App() {
       setMessages(message);
     });
 
+    socketRef.current.on('new-webPlaybackState', (state) => {
+      console.log("RECEIVED_PLAYBACK_STATE", state);
+    });
+
     socketRef.current.on('user-left', (users, message) => {
       setAllUsers(users);
       setMessages(messages => [...messages, message]);
@@ -93,6 +120,11 @@ function App() {
       setMessages(messages);
       setRoom(roomName);
     });
+  }
+
+  function sendWebPlaybackState(state) {
+    socketRef.current.emit('webPlaybackState', state, room);
+    console.log("CURRENT_PLAYBACK_STATE", state)
   }
 
   function createRoom() {
@@ -137,6 +169,7 @@ function App() {
                 handleUsernameChange={handleUsernameChange}
                 isAdmin={isAdmin}
                 auth_token={auth_token}
+                sendWebPlaybackState={sendWebPlaybackState}
               />
             } />
           </Routes>
