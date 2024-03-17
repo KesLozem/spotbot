@@ -54,7 +54,7 @@ const callback = async (req, res) => {
         // use the access token to access the Spotify Web API
         let display_name = await axios(options)
           .then(function (response) {
-            return response.data.display_name;
+            return response.data.id;
           });
 
         // we can also pass the token to the browser to make requests from there
