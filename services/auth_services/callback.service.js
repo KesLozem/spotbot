@@ -1,5 +1,6 @@
 const axios = require('axios');
 const querystring = require('querystring');
+const { setUserId } = require('../playlist_services/playlist_utils');
 require('dotenv').config();
 
 const client_secret = process.env.CLIENT_SECRET; // Your secret
@@ -54,6 +55,7 @@ const callback = async (req, res) => {
         // use the access token to access the Spotify Web API
         let display_name = await axios(options)
           .then(function (response) {
+            setUserId(response.data.id);
             return response.data.id;
           });
 
