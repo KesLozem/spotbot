@@ -20,7 +20,8 @@ function Home({
     isAdmin,
     auth_token,
     sendWebPlaybackState,
-    webPlaybackState
+    webPlaybackState,
+    skipTrack
 }) {
     return (
         <div className="container">
@@ -32,6 +33,7 @@ function Home({
                     sendWebPlaybackState={sendWebPlaybackState}
                 /> : <ClientPlayback 
                     webPlaybackState={webPlaybackState}
+                    skipTrack={skipTrack}
                 />}
             </div>
             <div className="sidebar">                
