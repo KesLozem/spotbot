@@ -1,10 +1,25 @@
 const axios = require('axios');
+const { getAuth } = require('../auth_services/store_auth.service');
 
 const pause = async (req, res) => {
+    // pause via URL call to express
 
     try {
-        // your application requests authorization
-        let access_token = req.query.access_token;
+        let response = await pause_api_call();
+        if (response === 204) {
+            console.log("Playback resumed.");
+            res.redirect("http://localhost:8080/");
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const pause_api_call = async () => {
+    // make call to spotify API requesting pause
+    try {
+        let access_token = getAuth();
         let authOptions = {
             url: 'https://api.spotify.com/v1/me/player/pause',
             method: 'put',
@@ -12,22 +27,21 @@ const pause = async (req, res) => {
             json: true
         };
 
-        axios(authOptions)
-        .then(function (response) {
-        if (response.status === 204) {
-            res.send("Paused");
-            console.log("Playback Paused.");
-        }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
+        // return status of spotify API call
+        let response = await axios(authOptions)
+        return response.status
+        
     } catch (error) {
-        console.log(error);
+        if ('response' in error) {
+            return error.response.status;
+        } else {
+            console.log(error);
+        }
+
     }
 }
 
 module.exports = {
-    pause
+    pause,
+    pause_api_call
 }

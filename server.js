@@ -13,6 +13,8 @@ const { instrument } = require("@socket.io/admin-ui");
 const authRoutes = require('./routes/auth.js');
 const roomRoutes = require('./routes/room_controls.js');
 const playbackRoutes = require('./routes/playback.js');
+const playlistRoutes = require('./routes/playlist.js');
+const searchRoutes = require('./routes/search.js');
 
 // Utils
 const utils = require('./utils/');
@@ -37,6 +39,10 @@ instrument(io, {
   mode: "development"
 });
 
+// SlackApp Configuration
+const { slackApp } = require('./bot.js');
+require('dotenv').config;
+
 
 app.use(express.static(path.join(__dirname + '/client' + '/build')))
   .use(cors())
@@ -48,6 +54,9 @@ app.get('/', (req, res) => res.send('Hello World!'));
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/playback', playbackRoutes);
+app.use('/api/playlist', playlistRoutes);
+app.use('/api/search', searchRoutes)
+
 
 httpServer.listen(8080, () => {
   console.log('listening on *:8080');
@@ -215,6 +224,13 @@ io.on('connection', socket => {
   });
 
 });
+
+(async () => {
+  // Start your app
+  await slackApp.start();
+
+  console.log('⚡️ Bolt app is running!');
+})();
 
 module.exports = {
   app
