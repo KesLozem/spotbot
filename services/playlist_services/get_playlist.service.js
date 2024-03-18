@@ -21,12 +21,13 @@ const get_playlist = async (req, res) => {
             .then(function (response) {
                 let playlists = response.data.items;
                 let playlist_exists = false;
-                for (let i = 0; i < playlists.length || playlist_exists; i++) {
-                    if (playlists[i].name === playlist_name) {
-                        playlist_exists = true;
-                        setId(playlists[i].id)
-                        res.send(`Playlist already existing with ID: ${playlists[i].id}`);
-                    }
+                for (let i = 0; (i < playlists.length) || !(playlist_exists); i++) {
+                        if (playlists[i].name === playlist_name) {
+                            playlist_exists = true;
+                            setId(playlists[i].id);
+                            console.log("Playlist already existing with ID: " + playlists[i].id);
+                            res.send(`Playlist already existing with ID: ${playlists[i].id}`);
+                        }                        
                 }
                 if (!playlist_exists) {
                     create_playlist.create_playlist(req, res);
