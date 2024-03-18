@@ -1,4 +1,5 @@
 const { get_playlist } = require('../services/playlist_services/get_playlist.service');
+const { get_tracks } = require('../services/playlist_services/get_tracks.service');
 
 const getPlaylist = (req, res) => {
     try {
@@ -8,6 +9,15 @@ const getPlaylist = (req, res) => {
     }
 }
 
+const getTrackItems = (req, res) =>{
+    try {
+        get_tracks(req, res);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
-    getPlaylist
+    getPlaylist,
+    getTrackItems
 }

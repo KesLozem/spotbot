@@ -25,7 +25,6 @@ const get_playlist = async (req, res) => {
                         if (playlists[i].name === playlist_name) {
                             playlist_exists = true;
                             setId(playlists[i].id);
-                            console.log("Playlist already existing with ID: " + playlists[i].id);
                             res.send(`Playlist already existing with ID: ${playlists[i].id}`);
                         }                        
                 }
