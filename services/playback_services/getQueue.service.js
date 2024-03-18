@@ -1,13 +1,12 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
-const { getId } = require('./playlist_utils');
 
 
-const playlist = async (req, res) => {
-    // Print current playlist to console (accessed via URL)
+const queue = async (req, res) => {
+    // Print current queue to console (accessed via URL)
 
     try {
-        await playlist_tracks();
+        await get_queue();
         res.redirect("http://localhost:8080/");    
 
     } catch (error) {
@@ -15,13 +14,12 @@ const playlist = async (req, res) => {
     }
 }
 
-const playlist_tracks = async (start_pos = 0) => {
+const get_queue = async () => {
     
     // Make call to spotify API using relevant information
     let access_token = getAuth();
-    let playlist_id = getId(); // default = spotbot playlist
     let authOptions = {
-        url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
+        url: 'https://api.spotify.com/v1/me/player/queue',
         method: 'get',
         headers: { 
             'Authorization': 'Bearer ' + access_token
@@ -29,21 +27,16 @@ const playlist_tracks = async (start_pos = 0) => {
         json: true
     };
 
-    if (!start_pos) {
-        authOptions.params = {
-            offset: start_pos
-        }
-    }
 
     let response = await axios(authOptions)
 
     // extract and return track
-    console.log(response.data)
-    return response.data
+    console.log(response.data.queue)
+    return response.data.queue
 
 }
 
 module.exports = {
-    playlist,
-    playlist_tracks
+    queue,
+    get_queue
 }
