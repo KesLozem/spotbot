@@ -187,40 +187,43 @@ io.on('connection', socket => {
 
   // User leaves server
   socket.once('disconnect', () => {
+    try{
+      let disc_id = socket.id
+      let userIndex = users.findIndex(user => user.id === disc_id);
+      let username = users[userIndex].username;
+      let roomName = users[userIndex].current_room;
+      let message = {
+        message: `${username} has left the party!`,
+        sender: 'SPOTBOT',
+        room: roomName,
+        timestamp: utils.getCurrentDateTime()
+      };
 
-    let disc_id = socket.id
-    let userIndex = users.findIndex(user => user.id === disc_id);
-    let username = users[userIndex].username;
-    let roomName = users[userIndex].current_room;
-    let message = {
-      message: `${username} has left the party!`,
-      sender: 'SPOTBOT',
-      room: roomName,
-      timestamp: utils.getCurrentDateTime()
-    };
-
-    // filter and update users and listeners
-    listeners[roomName] = listeners[roomName].filter(listener => listener !== username);
-    // if first user leaves then disconnect everone
-    console.log("userIndex", userIndex) // comes up as 1 for some reason
-    console.log("users", users)
-    if (userIndex === 0) {
-      io.sockets.sockets.forEach(socket => {
-        socket.disconnect(true);
-      });
-      setAuth(null);
-      console.log('auth', getAuth());
-      console.log('list of sockets', io.sockets.sockets)
-      console.log('ADMIN LEFT')
+      // filter and update users and listeners
+      listeners[roomName] = listeners[roomName].filter(listener => listener !== username);
+      // if first user leaves then disconnect everone
+      console.log("userIndex", userIndex) // comes up as 1 for some reason
+      console.log("users", users)
+      if (userIndex === 0) {
+        io.sockets.sockets.forEach(socket => {
+          socket.disconnect(true);
+        });
+        setAuth(null);
+        console.log('auth', getAuth());
+        console.log('list of sockets', io.sockets.sockets)
+        console.log('ADMIN LEFT')
+      }
+      users = users.filter(user => user.id !== socket.id);
+      
+      // update front end with user leaving
+      io.of('/').to(roomName).emit('user-left', listeners[roomName], message);
+      
+      // update state of room messages
+      messages[roomName].push(message);
+      console.log(`${utils.getCurrentDateTime()} [${roomName}] ${message.sender}: ${message.message}`)
+    } catch (error) {
+      console.log(error)
     }
-    users = users.filter(user => user.id !== socket.id);
-    
-    // update front end with user leaving
-    io.of('/').to(roomName).emit('user-left', listeners[roomName], message);
-    
-    // update state of room messages
-    messages[roomName].push(message);
-    console.log(`${utils.getCurrentDateTime()} [${roomName}] ${message.sender}: ${message.message}`)
   });
 
 });

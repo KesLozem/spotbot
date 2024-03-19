@@ -1,5 +1,5 @@
 //generates random string and exports function
-export const generateRandomString = (length) => { 
+const generateRandomString = (length) => { 
     let text = ''; 
     let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; 
     for (let i = 0; i < length; i++) 
@@ -7,10 +7,15 @@ export const generateRandomString = (length) => {
     return text; 
 }
 
-export const getCurrentDateTime = () => {
+const getCurrentDateTime = () => {
     let currentTime = new Date().toLocaleTimeString( 'en-GB', {hour12: false,
         hour: 'numeric',
         minute: 'numeric'});
     let currentDate = new Date().toLocaleDateString('en-GB');
     return `[${currentTime}]`
+}
+
+module.exports = {
+    generateRandomString,
+    getCurrentDateTime
 }

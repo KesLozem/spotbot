@@ -1,5 +1,6 @@
 const generateRandomString = require('../../utils/').generateRandomString;
 const querystring = require('querystring');
+require('dotenv').config()
 
 const client_id = process.env.CLIENT_ID; // Your client id
 const redirect_uri = process.env.REDIRECT_URI; // Your redirect uri
