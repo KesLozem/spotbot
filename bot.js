@@ -8,6 +8,7 @@ const { play_api_call } = require('./services/playback_services/play.service');
 const { find_pos } = require('./services/playlist_services/playlist_utils');
 const { skip_api_call } = require('./services/playback_services/skip.service');
 const { get_track } = require('./services/playback_services/currentTrack.service');
+const { get_queue } = require('./services/playback_services/getQueue.service');
 require('dotenv').config();
 
 
@@ -77,6 +78,8 @@ slackApp.action( "cancel_button" , async ({ body, ack, client, logger }) => {
     }
 });
 
+slackApp.command()
+
 slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
     // respond to search buttons
 
@@ -92,7 +95,7 @@ slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
     const response = await add_aux(uri);
 
     // Update response based on whether song was queued
-    if (response === 201) {
+    if (response >= 200 && response < 300) {
         // 201 means song was queued successfully
 
         // get selected number
@@ -170,23 +173,22 @@ slackApp.message('queue', async ({message, say})=> {
             ]
         }
 
-        let tracks = await playlist_tracks();
-        tracks.items.forEach(track => {
-            console.log(track.track.name)
+        let queue = await get_queue();
+        queue.forEach(track => {
+            console.log(track.name)
             res.blocks.push(
                 {
                     "type": "section",
                     "fields": [
                         {
                             "type": "mrkdwn",
-                            "text": `${track.track.name} `
+                            "text": `${track.name} `
                         }
                     ]
                 }
             )
         });
 
-        console.log(res);
         await say(res);
     }
 })
@@ -247,9 +249,10 @@ slackApp.message('skip', async ({message, say}) => {
 
 // Command for testing purposes only
 slackApp.message('test', async ({message, say}) => {
-    const tracks = await playlist_tracks();
-    const pos = find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd", tracks.items);
-    await say(`position: ${pos}`);
+    const queue = await get_queue();
+    // const tracks = await playlist_tracks();
+    // const pos = find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd", tracks.items);
+    // await say(`position: ${pos}`);
 })
 
 module.exports = {slackApp}
