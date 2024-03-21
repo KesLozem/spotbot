@@ -128,6 +128,12 @@ function App() {
     console.log("CURRENT_PLAYBACK_STATE", state)
   }
 
+  function skipTrack() {
+    socketRef.current.emit('skip-track', {username, room});
+    socketRef.current.emit('send-message', { message: `${username} has skipped the track!`, sender: 'SPOTBOT', room: room });
+    console.log("SKIPPING_TRACK");
+  }
+
   function createRoom() {
     
     // socketRef.current.emit('host-connect');
@@ -172,6 +178,7 @@ function App() {
                 auth_token={auth_token}
                 sendWebPlaybackState={sendWebPlaybackState}
                 webPlaybackState={webPlaybackState}
+                skipTrack={skipTrack}
               />
             } />
           </Routes>

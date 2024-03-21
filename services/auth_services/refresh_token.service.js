@@ -52,7 +52,7 @@ const refresh_call = async () => {
 }
 
 const auto_refresh = async () => {
-  await sleep(5 * 60 * 1000)
+  await sleep(55 * 60 * 1000)
   try {
     let response = await refresh_call()
     if (response.status === 200) {

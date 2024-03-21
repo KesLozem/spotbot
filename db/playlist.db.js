@@ -1,4 +1,14 @@
-const paylists = new Map();
+let playlist = [];
+
+function setTracks(tracks) {
+    playlist = tracks;
+}
+
+function getTracks() {
+    return playlist
+}
+
+// ============
 
 // convert items array to object
 function enrichTracks(items) {
@@ -23,9 +33,7 @@ function getPlaylist(user_id) {
     return paylists.get(user_id);
 }
 
-function getTracks(user_id) {
-    return paylists.get(user_id).get("items");
-}
+
 
 // Ensure playlist exists first
 function populatePlaylist(user_id, playlist_id, items) {
@@ -107,5 +115,6 @@ module.exports = {
     upvoteSong,
     skipSong,
     getPlaylist,
-    getTracks
+    getTracks,
+    setTracks
 }

@@ -3,7 +3,7 @@ const {play} = require('../services/playback_services/play.service');
 const {putDeviceID} = require('../services/playback_services/putDeviceID.service');
 const {state} = require('../services/playback_services/getState.service');
 const {track} = require('../services/playback_services/currentTrack.service');
-const {next} = require('../services/playback_services/skip.service');
+const {skip} = require('../services/playback_services/skip.service');
 const {prev} = require('../services/playback_services/prev.service');
 
 
@@ -47,7 +47,7 @@ const getTrack = (req, res) => {
     }
 }
 
-const skipNext = (req, res) => {
+const skipTrack = (req, res) => {
     try{
         next(req, res);
     } catch (error) {
@@ -69,6 +69,6 @@ module.exports = {
     setDeviceID,
     getState,
     getTrack,
-    skipNext,
+    skipTrack,
     skipPrev
 }

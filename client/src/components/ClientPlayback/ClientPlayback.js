@@ -2,11 +2,11 @@ import React from "react";
 import { useState, useRef, useEffect } from "react";
 import "./ClientPlayback.css";
 
-function ClientPlayback({webPlaybackState}) {
+function ClientPlayback({ webPlaybackState, skipTrack }) {
     const [progress, setProgress] = useState(0);
     const [currentTime, setTime] = useState("0:00");
     const [is_paused, setPaused] = useState(true);
-    
+
     const delay = 1000;
 
     function calcSongTime(ms) {
@@ -62,7 +62,9 @@ function ClientPlayback({webPlaybackState}) {
                         <div className="artist">{webPlaybackState.current_track.artists[0].name}</div>
                         <div className="title">{webPlaybackState.current_track.name}</div>
                         <div className="buttons">
-                            <div><p className="upnudge">⏭</p></div>
+                            <div onClick={() => skipTrack()}><p className="upnudge"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-skip-end-fill" viewBox="0 0 16 16">
+                                <path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.693 3.3 4 3.678 4 4.308v7.384c0 .63.692 1.01 1.233.697L11.5 8.753V12a.5.5 0 0 0 1 0z" />
+                            </svg></p></div>
                             <div></div>
                             <div></div>
                         </div>
@@ -71,9 +73,9 @@ function ClientPlayback({webPlaybackState}) {
             </div>
             <div className="bottom">
                 <div className="visualiser-container">
-                <div className="music-progress">
-                            <div id="progress-bar" className="music-progress-bar" style={{ width: (progress / webPlaybackState.durationms) * 100 + '%' }}></div>
-                        </div>
+                    <div className="music-progress">
+                        <div id="progress-bar" className="music-progress-bar" style={{ width: (progress / webPlaybackState.durationms) * 100 + '%' }}></div>
+                    </div>
                 </div>
                 <div className="information-container">
                     <div>{currentTime}</div>

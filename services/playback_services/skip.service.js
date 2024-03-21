@@ -1,14 +1,14 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
 
-const next = async (req, res) => {
+const skip = async (req, res) => {
     // URL based API call to skip song
     try {
 
         let response = await skip_api_call() // make spotify API call
         if (response.status === 204) {
             console.log("Skipped to next track.");
-            res.redirect("http://localhost:8080/");
+            res.send("Skipped");
         }
 
     } catch (error) {
@@ -43,6 +43,6 @@ const skip_api_call = async () => {
 }
 
 module.exports = {
-    next,
+    skip,
     skip_api_call
 }

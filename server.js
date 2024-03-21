@@ -16,6 +16,9 @@ const playbackRoutes = require('./routes/playback.js');
 const playlistRoutes = require('./routes/playlist.js');
 const searchRoutes = require('./routes/search.js');
 
+// Webapp services
+const { skip } = require('./services/playback_services/skip.service');
+
 // Utils
 const utils = require('./utils/');
 const { getAuth, setAuth } = require('./services/auth_services/store_auth.service');
@@ -23,6 +26,7 @@ const { getAuth, setAuth } = require('./services/auth_services/store_auth.servic
 // socket io 
 const { createServer, get } = require("http"); // SocketIO dependency
 const { Server } = require("socket.io");
+const { Console } = require('console');
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   serveClient: false,
@@ -164,6 +168,10 @@ io.on('connection', socket => {
     if (!state.is_paused) {
       msInterval = setInterval(incrementMs, 1000);
     }
+  });
+
+  socket.on('skip-track', ({username, room}) => {
+    skip();
   });
 
   // Host leaves room

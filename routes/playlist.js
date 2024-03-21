@@ -10,4 +10,9 @@ router.get('/user', playlistController.getUserPlaylists);
 router.get('/add', playlistController.enqueue);
 router.get('/delete', playlistController.removeItem);
 
+
+// Playlist routes
+router.get('/', playlistController.getPlaylist1);
+router.get('/tracks', playlistController.getTrackItems);
+
 module.exports = router;
