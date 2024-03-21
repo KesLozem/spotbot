@@ -7,5 +7,20 @@ const generateRandomString = (length) => {
     return text; 
 }
 
-module.exports = generateRandomString;
+const getCurrentDateTime = () => {
+    let currentTime = new Date().toLocaleTimeString( 'en-GB', {hour12: false,
+        hour: 'numeric',
+        minute: 'numeric'});
+    let currentDate = new Date().toLocaleDateString('en-GB');
+    return `[${currentTime}]`
+}
 
+const sleep = (interval) => {
+    return new Promise(r => setTimeout(r, interval));
+}
+
+module.exports = {
+    generateRandomString,
+    getCurrentDateTime,
+    sleep
+}

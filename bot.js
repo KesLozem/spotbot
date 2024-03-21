@@ -9,6 +9,7 @@ const { find_pos } = require('./services/playlist_services/playlist_utils');
 const { skip_api_call } = require('./services/playback_services/skip.service');
 const { get_track } = require('./services/playback_services/currentTrack.service');
 const { get_queue } = require('./services/playback_services/getQueue.service');
+const { sleep } = require('./utils');
 require('dotenv').config();
 
 
@@ -77,8 +78,6 @@ slackApp.action( "cancel_button" , async ({ body, ack, client, logger }) => {
         console.log(error)
     }
 });
-
-slackApp.command()
 
 slackApp.action( /button./ , async ({ body, ack, client, logger }) => {
     // respond to search buttons
@@ -198,7 +197,7 @@ slackApp.message('pause', async ({message, say}) => {
     console.log(message)
     if (message.text.trim() === 'pause') {
         let response = await pause_api_call();
-        if (response === 204) {
+        if (response >= 200 && response < 300) {
             await say("Playback paused");
         } else {
             await say(`Error - code: ${response}`);
@@ -210,7 +209,7 @@ slackApp.message('play', async ({message, say}) => {
     // resume playback when message is just "play"
     if (message.text.trim() === 'play') {
         let response = await play_api_call();
-        if (response === 204) {
+        if (response >= 200 && response < 300) {
             await say("Playback resumed");
         } else {
             await say(`Error - code: ${response}`);
@@ -228,8 +227,8 @@ slackApp.message('skip', async ({message, say}) => {
         let response = await skip_api_call();
 
         // check if successfully skipped
-        if (response.status === 204) {
-            await new Promise(r => setTimeout(r, 200));
+        if (response.status >= 200 && response.status < 300) {
+            await sleep(700)
             // If so, try get new playing song
             let playing_res = await get_track()
             if (playing_res.status === 200) {

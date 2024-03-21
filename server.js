@@ -38,6 +38,7 @@ instrument(io, {
 // Room_services
 const { createRoom } = require('./services/room_services/createRoom.service.js');
 const { slackApp } = require('./bot.js');
+const { auto_refresh } = require('./services/auth_services/refresh_token.service.js');
 require('dotenv').config;
 
 
@@ -90,6 +91,8 @@ io.on('connection', socket => {
 
   console.log('⚡️ Bolt app is running!');
 })();
+
+auto_refresh();
 
 module.exports = {
     app
