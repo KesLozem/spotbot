@@ -44,6 +44,7 @@ slackApp.message('search', async ({ message, say }) => {
             const search_res = await(search_aux(query));
             if ('status' in search_res) {
                 await say(`Error - code: ${search_res.status}`);
+                console.log(search_res)
             } else {
                 const res = format_search(search_res, query);    
                 await say(res);

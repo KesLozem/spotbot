@@ -1,6 +1,15 @@
 require('dotenv').config;
 
 var playlist_id = process.env.DEFAULT_PLAYLIST_ID;
+let user = '';
+
+const setUserId = (id) => {
+    user = id;
+}
+
+const getUserId = () => {
+    return user;
+}
 
 const setId = (id) => {
     playlist_id = id;
@@ -17,5 +26,7 @@ const find_pos = (track_uri, items_list) => {
 module.exports = {
     setId,
     getId,
-    find_pos
+    find_pos,
+    setUserId,
+    getUserId
 }
