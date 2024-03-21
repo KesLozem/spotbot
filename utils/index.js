@@ -15,7 +15,12 @@ const getCurrentDateTime = () => {
     return `[${currentTime}]`
 }
 
+const sleep = (interval) => {
+    return new Promise(r => setTimeout(r, interval));
+}
+
 module.exports = {
     generateRandomString,
-    getCurrentDateTime
+    getCurrentDateTime,
+    sleep
 }

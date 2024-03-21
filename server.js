@@ -41,6 +41,7 @@ instrument(io, {
 
 // SlackApp Configuration
 const { slackApp } = require('./bot.js');
+const { auto_refresh } = require('./services/auth_services/refresh_token.service.js');
 require('dotenv').config;
 
 
@@ -234,6 +235,8 @@ io.on('connection', socket => {
 
   console.log('⚡️ Bolt app is running!');
 })();
+
+auto_refresh();
 
 module.exports = {
   app
