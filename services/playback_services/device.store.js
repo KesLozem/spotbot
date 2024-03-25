@@ -6,10 +6,10 @@ const setDeviceId = (id) => {
 
 const getDeviceId = () => {
     // Return device ID if it has been set
-    if (!device_id) {
+    if (device_id) {
         return device_id;
     } else {
-        throw "No ID set";
+        throw new Error("No ID set");
     }
 }
 

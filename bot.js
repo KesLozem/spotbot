@@ -11,6 +11,7 @@ const { get_track } = require('./services/playback_services/currentTrack.service
 const { get_queue } = require('./services/playback_services/getQueue.service');
 const { sleep } = require('./utils');
 const { state_api_call } = require('./services/playback_services/getState.service');
+const { setDeviceId } = require('./services/playback_services/device.store');
 require('dotenv').config();
 
 
@@ -258,7 +259,7 @@ slackApp.message('test', async ({message, say}) => {
 slackApp.message('!id', async ({message, say}) => {
     let res = await state_api_call();
     console.log(res)
-    setId(res.data.device.id);
+    setDeviceId(res.data.device.id);
     await say(res.data.device.id);
 })
 
