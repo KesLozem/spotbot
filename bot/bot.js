@@ -1,5 +1,5 @@
 const { App } = require('@slack/bolt');
-const { search_func, cancel_search, search_buttons } = require('./functions/bot.search');
+const { search_func, cancel_search, search_buttons, remove_button, bring_next } = require('./functions/bot.search');
 
 const { find_pos, setId } = require('../services/playlist_services/playlist_utils');
 const { get_track } = require('../services/playback_services/currentTrack.service');
@@ -8,6 +8,7 @@ const { sleep } = require('../utils');
 const { state_api_call } = require('../services/playback_services/getState.service');
 const { setDeviceId } = require('../services/playback_services/device.store');
 const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playback');
+const { slack_queue } = require('./functions/bot.queue');
 require('dotenv').config();
 
 
@@ -25,13 +26,15 @@ slackApp.message('hello', async ({ message, say }) => {
     await say(`Hey there <@${message.user}>!`);
 });
 
+
+// !search and relevant buttons
 slackApp.message('!search', search_func);
-
 slackApp.action( "cancel_button", cancel_search);
-
 slackApp.action( /button./, search_buttons);
+slackApp.action("remove", remove_button);
+slackApp.action("bring_forward", bring_next);
 
-slackApp.message('!queue', get_queue);
+slackApp.message('!queue', slack_queue);
 
 slackApp.message('!pause', slack_pause);
 

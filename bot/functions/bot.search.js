@@ -1,5 +1,6 @@
 const { search_aux } = require('../../services/search_services/search.service');
 const { add_aux } = require('../../services/playlist_services/addTrack.service');
+const { remove_api_call } = require('../../services/playlist_services/removeTrack.service');
 
 
 const search_func = async ({ message, say }) => {
@@ -159,6 +160,41 @@ const search_buttons = async ({ body, ack, client, logger }) => {
     }
 }
 
+const remove_button = async ({body, ack, client, logger}) => {
+    await ack();
+    const uri = body.actions[0].value
+
+    const response = await remove_api_call(uri)
+    if (response.status >= 200 && response.status < 300) {
+        const track_name = body.message.blocks[0].text.text.split(': ')[1];
+        try {
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `Removed Track: *${track_name}*`,
+                        }
+                    }
+                ]
+            })
+        } catch (error) {
+            logger.error(error);
+        }
+    } else {
+        console.log(response)
+    }
+
+}
+
+const bring_next = async ({body, ack, client, logger}) => {
+    await ack();
+    const uri = body.actions[0].value
+}
+
 const format_search = (tracks, query) => {
     /** Format Results as slack block
      * tracks: list of up to 5 found tracks, each as an object
@@ -255,5 +291,7 @@ module.exports = {
     search_func,
     cancel_search,
     search_buttons,
+    remove_button,
+    bring_next,
     format_search
 }

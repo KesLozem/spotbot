@@ -7,9 +7,25 @@ const remove = async (req, res) => {
 
     try {
         // your application requests authorization
+        let track_uri = req.query.uri
+
+        let response = await remove_api_call(track_uri)
+
+        if (response.status === 200) {
+            console.log(response.data);
+            res.redirect("http://localhost:8080/");
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const remove_api_call = async (uri) => {
+    try{
         let access_token = getAuth();
         let playlist_id = getId();
-        let track_uri = req.query.uri;
+        let track_uri = uri;
         let authOptions = {
             url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
             method: 'delete',
@@ -22,22 +38,18 @@ const remove = async (req, res) => {
             json: true
         };
 
-        axios(authOptions)
-        .then(function (response) {
-        if (response.status === 200) {
-            console.log(response.data);
-            res.redirect("http://localhost:8080/");
-        }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
+        return await axios(authOptions)
     } catch (error) {
-        console.log(error);
+        if ('response' in error) {
+            return error.response
+        }
+        else {
+            console.log(error)
+        }        
     }
 }
 
 module.exports = {
-    remove
+    remove,
+    remove_api_call
 }
