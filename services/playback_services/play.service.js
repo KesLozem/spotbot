@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+const { getDeviceId } = require('./device.store');
 require('dotenv').config();
 
 const play = async (req, res) => {
@@ -22,29 +23,18 @@ const play_api_call = async () => {
 
     try {
         let access_token = getAuth();
+        let device_id = getDeviceId();
         let authOptions = {
             url: 'https://api.spotify.com/v1/me/player/play',
             method: 'put',
             headers: { 'Authorization': 'Bearer ' + access_token },
+            params: {'device_id': device_id},
             json: true
         };
 
         
         // return whether API call was successful
-        let response = await axios(authOptions).catch( (error) => {
-            if ('response' in error) {
-                if (error.response.status === 404) {
-                    authOptions.params = {
-                        'device_id': process.env.DEFAULT_DEVICE_ID 
-                    }
-                    return axios(authOptions)
-                } else {
-                    return error.response;
-                }
-            } else {
-                console.log(error)
-            }     
-        })
+        let response = await axios(authOptions)
         console.log(response.status)
         return response.status
 

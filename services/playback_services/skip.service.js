@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+const { getDeviceId } = require('./device.store');
 
 const next = async (req, res) => {
     // URL based API call to skip song
@@ -21,12 +22,13 @@ const skip_api_call = async () => {
 
     try {
         let access_token = getAuth(); // get access token
-
+        let device_id = getDeviceId();
         // spotify skip API and relevant info
         let authOptions = {
                 url: 'https://api.spotify.com/v1/me/player/next',
                 method: 'post',
                 headers: { 'Authorization': 'Bearer ' + access_token },
+                params: {'device_id': device_id},
                 json: true
             };
         return await axios(authOptions)

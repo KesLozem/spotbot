@@ -1,4 +1,4 @@
-const generateRandomString = require('../../utils');
+const { generateRandomString } = require('../../utils');
 const querystring = require('querystring');
 require('dotenv').config();
 

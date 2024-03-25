@@ -5,11 +5,12 @@ const { add_aux } = require('./services/playlist_services/addTrack.service');
 const { playlist_tracks } = require('./services/playlist_services/getPlaylist.service');
 const { pause_api_call } = require('./services/playback_services/pause.service');
 const { play_api_call } = require('./services/playback_services/play.service');
-const { find_pos } = require('./services/playlist_services/playlist_utils');
+const { find_pos, setId } = require('./services/playlist_services/playlist_utils');
 const { skip_api_call } = require('./services/playback_services/skip.service');
 const { get_track } = require('./services/playback_services/currentTrack.service');
 const { get_queue } = require('./services/playback_services/getQueue.service');
 const { sleep } = require('./utils');
+const { state_api_call } = require('./services/playback_services/getState.service');
 require('dotenv').config();
 
 
@@ -252,6 +253,13 @@ slackApp.message('test', async ({message, say}) => {
     // const tracks = await playlist_tracks();
     // const pos = find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd", tracks.items);
     // await say(`position: ${pos}`);
+})
+
+slackApp.message('!id', async ({message, say}) => {
+    let res = await state_api_call();
+    console.log(res)
+    setId(res.data.device.id);
+    await say(res.data.device.id);
 })
 
 module.exports = {slackApp}
