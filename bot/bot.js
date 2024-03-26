@@ -9,6 +9,7 @@ const { state_api_call } = require('../services/playback_services/getState.servi
 const { setDeviceId } = require('../services/playback_services/device.store');
 const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playback');
 const { slack_queue } = require('./functions/bot.queue');
+const { slack_clear, remove_msg_buttons } = require('./functions/bot.clear');
 require('dotenv').config();
 
 
@@ -42,10 +43,16 @@ slackApp.message('!play', slack_play);
 
 slackApp.message('!skip', slack_skip);
 
+slackApp.message('!clear', slack_clear);
+
+
 // Command for testing purposes only
-slackApp.message('test', async ({message, say}) => {
-    const msg = await say("test");
-    console.log(msg)
+slackApp.message('test', async ({message, say, client}) => {
+    if (message.text.trim() === "test") {
+        const msg = await say("test");
+        console.log(msg)
+        remove_msg_buttons({client})
+    }
 })
 
 slackApp.message('!id', async ({message, say}) => {
@@ -53,6 +60,7 @@ slackApp.message('!id', async ({message, say}) => {
     console.log(res)
     setDeviceId(res.data.device.id);
     await say(res.data.device.id);
+    await remove_msg_buttons
 })
 
 module.exports = {slackApp}

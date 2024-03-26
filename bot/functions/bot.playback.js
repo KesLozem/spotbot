@@ -1,6 +1,7 @@
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
+const { sleep } = require('../../utils');
 
 const slack_pause = async ({message, say}) => {
     // pause playback when message is just "pause"

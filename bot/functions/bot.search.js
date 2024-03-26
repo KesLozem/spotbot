@@ -1,6 +1,7 @@
 const { search_aux } = require('../../services/search_services/search.service');
 const { add_aux } = require('../../services/playlist_services/addTrack.service');
 const { remove_api_call } = require('../../services/playlist_services/removeTrack.service');
+const { store_msg, unstore_msg } = require('./bot.clear');
 
 
 const search_func = async ({ message, say }) => {
@@ -22,8 +23,9 @@ const search_func = async ({ message, say }) => {
                 await say(`Error - code: ${search_res.status}`);
             } else {
                 const res = format_search(search_res, query);    
-                await say(res);
+                let msg = await say(res);
                 console.log(res);
+                console.log(msg);
             }
         }
 
@@ -83,7 +85,7 @@ const search_buttons = async ({ body, ack, client, logger }) => {
         
         // Update original message to reflect button press
         try{
-            await client.chat.update({
+            let res = await client.chat.update({
                 "channel": body.channel.id,
                 "ts": body.message.ts,
                 "blocks": [
@@ -134,6 +136,8 @@ const search_buttons = async ({ body, ack, client, logger }) => {
                     }
                 ]
             })
+            console.log(res);
+            store_msg(res);
         } catch (error) {
             logger.error(error);
         }
@@ -181,11 +185,28 @@ const remove_button = async ({body, ack, client, logger}) => {
                     }
                 ]
             })
+            unstore_msg(body.message.ts)
         } catch (error) {
             logger.error(error);
         }
     } else {
-        console.log(response)
+        try {
+            let blocks = body.message.blocks;
+            blocks.push({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `Error Removing Track - code: ${response.status}`,
+                }
+            })
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": blocks
+            })
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
 }
