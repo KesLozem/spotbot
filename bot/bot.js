@@ -7,7 +7,7 @@ const { sleep, wait_until } = require('../utils');
 const { state_api_call } = require('../services/playback_services/getState.service');
 const { setDeviceId } = require('../services/playback_services/device.store');
 const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playback');
-const { slack_queue } = require('./functions/bot.queue');
+const { slack_queue, slack_current } = require('./functions/bot.queue');
 const { slack_clear, remove_msg_buttons, cycle_playlist } = require('./functions/bot.clear');
 const find_pos = require('../services/playlist_services/findposition');
 require('dotenv').config();
@@ -35,6 +35,7 @@ slackApp.action( /button./, search_buttons);
 slackApp.action("remove", remove_button);
 slackApp.action("bring_forward", bring_next);
 
+slackApp.message('!playing', slack_current);
 slackApp.message('!queue', slack_queue);
 
 slackApp.message('!pause', slack_pause);
