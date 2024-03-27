@@ -3,12 +3,12 @@ const { search_func, cancel_search, search_buttons, remove_button, bring_next } 
 
 const { get_track } = require('../services/playback_services/currentTrack.service');
 const { get_queue } = require('../services/playback_services/getQueue.service');
-const { sleep } = require('../utils');
+const { sleep, wait_until } = require('../utils');
 const { state_api_call } = require('../services/playback_services/getState.service');
 const { setDeviceId } = require('../services/playback_services/device.store');
 const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playback');
 const { slack_queue } = require('./functions/bot.queue');
-const { slack_clear, remove_msg_buttons } = require('./functions/bot.clear');
+const { slack_clear, remove_msg_buttons, cycle_playlist } = require('./functions/bot.clear');
 const find_pos = require('../services/playlist_services/findposition');
 require('dotenv').config();
 
@@ -66,6 +66,14 @@ slackApp.message('!id', async ({message, say}) => {
     await remove_msg_buttons
 })
 
-module.exports = {slackApp}
+const daily_reset = async (hour) => {
+    await wait_until(hour);
+    await cycle_playlist({client: slackApp.client})
+}
+
+module.exports = {
+    slackApp,
+    daily_reset
+}
 
 

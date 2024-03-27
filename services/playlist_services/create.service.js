@@ -7,8 +7,27 @@ const user_id = process.env.USER_ID;
 
 const create = async (req, res) => {
 
+    // Create playlist when accessed via url (express)
+
     try {
-        // your application requests authorization
+        // get result of api call
+        let response = await create_api_call();
+        if (response.status === 201) {
+            id = response.data.id
+            console.log(`Created Playlist\n ID: ${id}`);
+            setId(id);
+            res.redirect("http://localhost:8080/");
+        }
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const create_api_call = async () => {
+    // make api call to spotify
+    try {
         let access_token = getAuth();
         let authOptions = {
             url: 'https://api.spotify.com/v1/users/' + user_id + '/playlists',
@@ -25,24 +44,16 @@ const create = async (req, res) => {
             json: true
         };
 
-        axios(authOptions)
-        .then(function (response) {
-        if (response.status === 201) {
-            id = response.data.id
-            console.log(`Created Playlist\n ID: ${id}`);
-            setId(id);
-            res.redirect("http://localhost:8080/");
-        }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
+        return await axios(authOptions)
     } catch (error) {
-        console.log(error);
+        if ('response' in error) {
+            return error.response;
+        }
+        console.log(error)
     }
 }
 
 module.exports = {
-    create
+    create,
+    create_api_call
 }

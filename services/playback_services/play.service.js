@@ -18,7 +18,7 @@ const play = async (req, res) => {
     }
 }
 
-const play_api_call = async () => {
+const play_api_call = async (uri = null) => {
     // make call to spotify API endpoint to resume playback
 
     try {
@@ -27,10 +27,16 @@ const play_api_call = async () => {
         let authOptions = {
             url: 'https://api.spotify.com/v1/me/player/play',
             method: 'put',
-            headers: { 'Authorization': 'Bearer ' + access_token },
+            headers: { 'Authorization': 'Bearer ' + access_tokesn },
             params: {'device_id': device_id},
             json: true
         };
+
+        if (uri) {
+            authOptions.data = {
+                context_uri: uri
+            }
+        }
 
         
         // return whether API call was successful
@@ -41,6 +47,7 @@ const play_api_call = async () => {
         
     } catch (error) {
         if ('response' in error) {
+            console.log(error.response)
             return error.response.status;
         } else {
             console.log(error);

@@ -1,7 +1,11 @@
+const { get_track } = require('../../services/playback_services/currentTrack.service');
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
+const { getId } = require('../../services/playlist_services/playlist_utils');
 const { sleep } = require('../../utils');
+
+let first_song = false;
 
 const slack_pause = async ({message, say}) => {
     // pause playback when message is just "pause"
@@ -19,20 +23,35 @@ const slack_pause = async ({message, say}) => {
 const slack_play = async ({message, say}) => {
     // resume playback when message is just "play"
     if (message.text.trim() === '!play') {
-        let response = await play_api_call();
+        var response;
+        if (first_song) {
+            let playlist_id = getId();
+            response = await play_api_call(`spotify:playlist:${playlist_id}`);
+        } else {
+            response = await play_api_call();
+        }
         if (response >= 200 && response < 300) {
+            if (first_song) {
+                first_song = false;
+            }
             await say("Playback resumed");
+        } else if (response === 403) {
+            await say("Error 403 - Please check queue isn't empty");
         } else {
             await say(`Error - code: ${response}`);
         }
     }
 }
 
+const new_first_song = () => {
+    first_song = true;
+}
+
 const slack_skip = async ({message, say}) => {
     // Skip current track by sending "skip"
 
     // Only allow message that is just 'skip' (allowing for spaces)
-    if (message.text.trim() === 'skip') {
+    if (message.text.trim() === '!skip') {
 
         // Make spotify API call to skip
         let response = await skip_api_call();
@@ -60,5 +79,6 @@ const slack_skip = async ({message, say}) => {
 module.exports = {
     slack_pause,
     slack_play,
-    slack_skip
+    slack_skip,
+    new_first_song
 }

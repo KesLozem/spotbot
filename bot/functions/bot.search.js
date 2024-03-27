@@ -22,7 +22,7 @@ const search_func = async ({ message, say }) => {
             await say("Please enter a query after search")
         } else if (message.text.slice(0,8) == "!search ") {
             // Extract query and search spotify API
-            const query = message.text.slice(7);
+            const query = message.text.slice(8);
             const search_res = await(search_aux(query));
             if ('status' in search_res) {
                 await say(`Error - code: ${search_res.status}`);

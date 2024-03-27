@@ -37,7 +37,7 @@ instrument(io, {
 
 // Room_services
 const { createRoom } = require('./services/room_services/createRoom.service.js');
-const { slackApp } = require('./bot/bot.js');
+const { slackApp, daily_reset } = require('./bot/bot.js');
 const { auto_refresh } = require('./services/auth_services/refresh_token.service.js');
 require('dotenv').config;
 
@@ -93,6 +93,8 @@ io.on('connection', socket => {
 })();
 
 auto_refresh();
+
+daily_reset(6);
 
 module.exports = {
     app

@@ -1,13 +1,15 @@
-const { track } = require("../../services/playback_services/currentTrack.service");
+const { play_api_call } = require("../../services/playback_services/play.service");
+const { create_api_call } = require("../../services/playlist_services/create.service");
+const { unfollow_playlist } = require("../../services/playlist_services/delete.service");
 const { playlist_tracks } = require("../../services/playlist_services/getPlaylist.service");
 const { setId } = require("../../services/playlist_services/playlist_utils");
 const { remove_api_call } = require("../../services/playlist_services/removeTrack.service");
+const { new_first_song } = require("./bot.playback");
 require('dotenv').config();
 
 let msg_list = [];
 
 const clear_playlist = async () => {
-    setId(process.env.DEFAULT_PLAYLIST_ID) // don't clear any other playlist
     try {
         let tracks = await playlist_tracks();
         while (tracks.total > 0) {
@@ -25,20 +27,36 @@ const clear_playlist = async () => {
 
 const slack_clear = async ({message, say, client}) => {
     if (message.text.trim() === "!clear") {
-        let response = await clear_playlist();
-        if (response == "success") {
-            await say("Playlist Cleared.")
-            remove_msg_buttons({client});
+        let response = await cycle_playlist({client});
+        if (response.slice(0,5) == "Error") {
+            console.log(response)
+            await say(response)
         } else {
-            let error = response;
-            if ('response' in error) {
-                await say(`Error - code: ${error.response.status}`)
-            } else {
-                await say("Error clearing playlist")
-            }
+            await say( `Playlist has been wiped. New Playlist ID : ${response}`)
         }
+        
     }
 }
+
+const cycle_playlist = async ({client}) => {
+    let del_res = await unfollow_playlist()
+    if (del_res.status >= 200 && del_res.status < 300) {
+        remove_msg_buttons({client})
+        let res = await create_api_call()
+        if (res.status >= 200 && res.status < 300) {
+            let id = res.data.id
+            setId(id);
+            console.log(`${id}`)
+            new_first_song();
+            return `${id}`
+        } else {
+            return "Error creating new playlist"
+        }
+    } else {
+        return "Error unfollowing playlist"
+    }
+}
+
 
 const remove_msg_buttons = async ({client}) => {
     msg_list.forEach((message) => {
@@ -66,7 +84,7 @@ const unstore_msg = (timestamp) => {
 }
 
 module.exports = {
-    clear_playlist,
+    cycle_playlist,
     slack_clear,
     remove_msg_buttons,
     store_msg,

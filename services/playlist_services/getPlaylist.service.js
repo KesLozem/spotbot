@@ -15,7 +15,7 @@ const playlist = async (req, res) => {
     }
 }
 
-const playlist_tracks = async (start_pos = 0) => {
+const playlist_tracks = async (start_pos = 0, limit = 50) => {
     
     // Make call to spotify API using relevant information
     let access_token = getAuth();
@@ -28,7 +28,7 @@ const playlist_tracks = async (start_pos = 0) => {
         },
         params: {
             offset: start_pos,
-            limit: 50
+            limit: limit
         },
         json: true
     };
