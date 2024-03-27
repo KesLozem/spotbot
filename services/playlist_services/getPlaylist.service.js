@@ -26,19 +26,18 @@ const playlist_tracks = async (start_pos = 0) => {
         headers: { 
             'Authorization': 'Bearer ' + access_token
         },
+        params: {
+            offset: start_pos,
+            limit: 50
+        },
         json: true
     };
 
-    if (!start_pos) {
-        authOptions.params = {
-            offset: start_pos
-        }
-    }
 
     let response = await axios(authOptions)
 
     // extract and return track
-    console.log(response.data)
+    // console.log(response.data)
     return response.data
 
 }

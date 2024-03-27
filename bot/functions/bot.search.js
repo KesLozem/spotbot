@@ -2,6 +2,11 @@ const { search_aux } = require('../../services/search_services/search.service');
 const { add_aux } = require('../../services/playlist_services/addTrack.service');
 const { remove_api_call } = require('../../services/playlist_services/removeTrack.service');
 const { store_msg, unstore_msg } = require('./bot.clear');
+const find_pos = require('../../services/playlist_services/findposition');
+const { get_track } = require('../../services/playback_services/currentTrack.service');
+const { pause_api_call } = require('../../services/playback_services/pause.service');
+const { shift_api_call } = require('../../services/playlist_services/moveTrack.service');
+const { sleep } = require('../../utils');
 
 
 const search_func = async ({ message, say }) => {
@@ -166,10 +171,12 @@ const search_buttons = async ({ body, ack, client, logger }) => {
 
 const remove_button = async ({body, ack, client, logger}) => {
     await ack();
-    const uri = body.actions[0].value
+    const uri = body.actions[0].value // track uri to remove
 
+    // remove track from playlist
     const response = await remove_api_call(uri)
     if (response.status >= 200 && response.status < 300) {
+        // If successful, update message to reflect track removal
         const track_name = body.message.blocks[0].text.text.split(': ')[1];
         try {
             await client.chat.update({
@@ -191,6 +198,7 @@ const remove_button = async ({body, ack, client, logger}) => {
         }
     } else {
         try {
+            //Otherwise append error to message
             let blocks = body.message.blocks;
             blocks.push({
                 "type": "section",
@@ -214,6 +222,63 @@ const remove_button = async ({body, ack, client, logger}) => {
 const bring_next = async ({body, ack, client, logger}) => {
     await ack();
     const uri = body.actions[0].value
+    let [track_pos, track_list] = await find_pos(uri)
+    if (track_pos == -1) {
+        // If not in playlist, update message to reflect that song was removed
+        try {
+            let blocks = body.message.blocks.slice(0,2);
+            blocks.push({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `Error - Song removed from playlist`,
+                }
+            })
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": blocks
+            })
+        } catch (error) {
+            logger.error(error);
+        }
+    } else {
+        try {
+            let res = await get_track();
+            if (res.status === 404) {
+                await pause_api_call();
+                res = await get_track();
+            }
+            let [pos, _] = await find_pos(res.data.item.uri, track_list);
+            console.log("DONE")
+
+            let response = await shift_api_call(track_pos, pos + 1);
+            console.log(response)
+            if (response >= 200 && response < 300) {
+                try {
+                    let blocks = body.message.blocks.slice(0,2);
+                    blocks.push({
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `Successfully moved to next playlist position`,
+                        }
+                    })
+                    await client.chat.update({
+                        "channel": body.channel.id,
+                        "ts": body.message.ts,
+                        "blocks": blocks
+                    })
+                } catch (error) {
+                    logger.error(error);
+                }
+            }
+
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 const format_search = (tracks, query) => {
