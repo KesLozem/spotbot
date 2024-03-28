@@ -65,7 +65,7 @@ const extract_response = (response) => {
     if (response.status === 200) {
     // Check correct status
         tracks = response.data.tracks
-        console.log(response.data.tracks.total)
+        // console.log(response.data.tracks.total)
         clearResults(); // Clear table in storeResults js
 
         // create table to store information extracted from each track

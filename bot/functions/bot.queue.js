@@ -88,9 +88,6 @@ const queue_button = (direction) => async ({body, ack, client, logger}) => {
         pos = Number(pos)
         let queue = await playlist_tracks(pos + 10 * skips, 10);
         if (queue.total <= pos + 10 * skips) {
-            console.log(queue.total)
-            console.log(pos + 10* skips)
-            console.log(skips)
             try {
                 //Otherwise append error to message
                 let blocks = body.message.blocks;

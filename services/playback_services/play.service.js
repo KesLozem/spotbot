@@ -41,7 +41,7 @@ const play_api_call = async (uri = null) => {
         
         // return whether API call was successful
         let response = await axios(authOptions)
-        console.log(response.status)
+        // console.log(response.status)
         return response.status
 
         

@@ -84,7 +84,6 @@ const cycle_playlist = async ({client}) => {
 
 const remove_msg_buttons = async ({client}) => {
     msg_list.forEach((message) => {
-        console.log(message.blocks)
         try {
             blocks = message.message.blocks.slice(0,2)
             client.chat.update({

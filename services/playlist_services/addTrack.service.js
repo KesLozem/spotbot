@@ -44,7 +44,7 @@ const add_aux = async (uri) => {
     // log and return spotify response
     return axios(authOptions).then(function (response) {
         if (response.status === 201) {
-            console.log(response.data);
+            // console.log(response.data);
         }
         return response.status
     }).catch( (error) => {

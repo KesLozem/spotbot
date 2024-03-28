@@ -15,7 +15,6 @@ const search_func = async ({ message, say }) => {
      */
 
     try {
-        console.log(message);
         // Only respond if search is the start of the message
         if (message.text.trim() == "!search") {
             // Check that there is a query
@@ -28,9 +27,7 @@ const search_func = async ({ message, say }) => {
                 await say(`Error - code: ${search_res.status}`);
             } else {
                 const res = format_search(search_res, query);    
-                let msg = await say(res);
-                console.log(res);
-                console.log(msg);
+                await say(res);
             }
         }
 
@@ -67,8 +64,6 @@ const search_buttons = async ({ body, ack, client, logger }) => {
 
 
     await ack();
-    console.log(body.actions)
-    console.log(body.message)
 
     // get track uri
     const uri = body.actions[0].value
@@ -141,7 +136,6 @@ const search_buttons = async ({ body, ack, client, logger }) => {
                     }
                 ]
             })
-            console.log(res);
             store_msg(res);
         } catch (error) {
             logger.error(error);
@@ -250,10 +244,8 @@ const bring_next = async ({body, ack, client, logger}) => {
                 res = await get_track();
             }
             let [pos, _] = await find_pos(res.data.item.uri, track_list);
-            console.log("DONE")
 
             let response = await shift_api_call(track_pos, pos + 1);
-            console.log(response)
             if (response >= 200 && response < 300) {
                 try {
                     let blocks = body.message.blocks.slice(0,2);
@@ -338,7 +330,6 @@ const format_search = (tracks, query) => {
         })
     });
     
-    console.log(tracks.length);
 
     if (tracks.length === 0) {
         // Add text saying no results found if there are no results

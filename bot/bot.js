@@ -54,21 +54,21 @@ slackApp.message('!reset', slack_reset);
 slackApp.message('!commands', slack_commands);
 
 
-// Command for testing purposes only
-slackApp.message('test', async ({message, say, client}) => {
-    if (message.text.trim() === "test") {
-        const msg = await say("test");
-        console.log(msg)
-        remove_msg_buttons({client})
-    } else if (message.text === "test1") {
-        let pos = await find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd")
-        console.log(pos)
-    }
-})
+// // Command for testing purposes only
+// slackApp.message('test', async ({message, say, client}) => {
+//     if (message.text.trim() === "test") {
+//         const msg = await say("test");
+//         console.log(msg)
+//         remove_msg_buttons({client})
+//     } else if (message.text === "test1") {
+//         let pos = await find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd")
+//         console.log(pos)
+//     }
+// })
 
 slackApp.message('!id', async ({message, say}) => {
     let res = await state_api_call();
-    console.log(res)
+    // console.log(res)
     setDeviceId(res.data.device.id);
     await say(res.data.device.id);
     await remove_msg_buttons

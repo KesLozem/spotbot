@@ -31,7 +31,7 @@ const get_queue = async () => {
     let response = await axios(authOptions)
 
     // extract and return track
-    console.log(response.data.queue)
+    // console.log(response.data.queue)
     return response.data.queue
 
 }

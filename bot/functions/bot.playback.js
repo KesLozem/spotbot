@@ -9,7 +9,6 @@ let first_song = false;
 
 const slack_pause = async ({message, say}) => {
     // pause playback when message is just "pause"
-    console.log(message)
     if (message.text.trim() === '!pause') {
         let response = await pause_api_call();
         if (response >= 200 && response < 300) {
