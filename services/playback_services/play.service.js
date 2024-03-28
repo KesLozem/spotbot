@@ -27,7 +27,7 @@ const play_api_call = async (uri = null) => {
         let authOptions = {
             url: 'https://api.spotify.com/v1/me/player/play',
             method: 'put',
-            headers: { 'Authorization': 'Bearer ' + access_tokesn },
+            headers: { 'Authorization': 'Bearer ' + access_token },
             params: {'device_id': device_id},
             json: true
         };

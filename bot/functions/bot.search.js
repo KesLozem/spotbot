@@ -245,7 +245,7 @@ const bring_next = async ({body, ack, client, logger}) => {
     } else {
         try {
             let res = await get_track();
-            if (res.status === 404) {
+            if (res.status === 204) {
                 await pause_api_call();
                 res = await get_track();
             }
