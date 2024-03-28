@@ -43,6 +43,9 @@ const slack_queue = async ({message, say, client})=> {
             }
             if (current.status >= 200 && current.status < 300 && current.status != 204) {
                 let [pos, _] = await find_pos(current.data.item.uri);
+                if (pos == -1) {
+                    pos = 0;
+                }
                 let queue = await playlist_tracks(pos, 10);
                 if (queue.total === 0) {
                     await say("Queue is currently empty")

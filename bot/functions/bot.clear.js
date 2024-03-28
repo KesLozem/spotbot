@@ -18,6 +18,7 @@ const clear_playlist = async () => {
             });
             tracks = await playlist_tracks();
         }
+        new_first_song();
         return "success"
     } catch (error) {
         console.log(error)
@@ -27,6 +28,23 @@ const clear_playlist = async () => {
 
 const slack_clear = async ({message, say, client}) => {
     if (message.text.trim() === "!clear") {
+        let response = await clear_playlist();
+        if (response == "success") {
+            await say("Playlist Cleared.")
+            remove_msg_buttons({client});
+        } else {
+            let error = response;
+            if ('response' in error) {
+                await say(`Error - code: ${error.response.status}`)
+            } else {
+                await say("Error clearing playlist")
+            }
+        }
+    }
+}
+
+const slack_reset = async ({message, say, client}) => {
+    if (message.text.trim() === "!reset") {
         let response = await cycle_playlist({client});
         if (response.slice(0,5) == "Error") {
             console.log(response)
@@ -84,8 +102,10 @@ const unstore_msg = (timestamp) => {
 }
 
 module.exports = {
+    clear_playlist,
     cycle_playlist,
     slack_clear,
+    slack_reset,
     remove_msg_buttons,
     store_msg,
     unstore_msg
