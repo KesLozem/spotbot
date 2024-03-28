@@ -1,3 +1,4 @@
+const { refresh } = require("../../services/auth_services/refresh_token.service");
 const { play_api_call } = require("../../services/playback_services/play.service");
 const { create_api_call } = require("../../services/playlist_services/create.service");
 const { unfollow_playlist } = require("../../services/playlist_services/delete.service");
@@ -51,6 +52,11 @@ const slack_reset = async ({message, say, client}) => {
             await say(response)
         } else {
             await say( `Playlist has been wiped. New Playlist ID : ${response}`)
+        }
+        try {
+            await refresh_call()
+        } catch (error) {
+            console.log(error)
         }
         
     }
