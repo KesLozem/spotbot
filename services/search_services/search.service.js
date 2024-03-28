@@ -83,10 +83,10 @@ const extract_response = (response) => {
             } catch (error) {
                 artist_list = 'None';
             }
-            console.log(`
-            Name: ${track.name}
-            Artist(s): ${artist_list}
-            Spotify URI: ${track.uri}`)
+            // console.log(`
+            // Name: ${track.name}
+            // Artist(s): ${artist_list}
+            // Spotify URI: ${track.uri}`)
             addResult(track.uri) // add to storeResults table
 
             // extract name, artists and uri
