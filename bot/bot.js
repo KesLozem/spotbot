@@ -10,6 +10,7 @@ const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playbac
 const { slack_queue, slack_current, queue_button } = require('./functions/bot.queue');
 const { slack_clear, remove_msg_buttons, cycle_playlist, slack_reset } = require('./functions/bot.clear');
 const find_pos = require('../services/playlist_services/findposition');
+const slack_commands = require('./functions/bot.commands');
 require('dotenv').config();
 
 
@@ -49,6 +50,8 @@ slackApp.message('!skip', slack_skip);
 slackApp.message('!clear', slack_clear);
 
 slackApp.message('!reset', slack_reset);
+
+slackApp.message('!commands', slack_commands);
 
 
 // Command for testing purposes only
