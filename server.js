@@ -56,8 +56,8 @@ app.use('/api/playlist', playlistRoutes);
 app.use('/api/search', searchRoutes)
 
 
-httpServer.listen(8888, () => {
-    console.log('listening on *:8888');
+httpServer.listen(8080, () => {
+    console.log('listening on *:8080');
 });
 
 // Connection is made to server from client
