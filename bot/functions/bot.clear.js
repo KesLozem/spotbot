@@ -3,9 +3,8 @@ const { play_api_call } = require("../../services/playback_services/play.service
 const { create_api_call } = require("../../services/playlist_services/create.service");
 const { unfollow_playlist } = require("../../services/playlist_services/delete.service");
 const { playlist_tracks } = require("../../services/playlist_services/getPlaylist.service");
-const { setId } = require("../../services/playlist_services/playlist_utils");
+const { setId, set_queue_empty, set_fallback_change } = require("../../services/playlist_services/playlist_utils");
 const { remove_api_call } = require("../../services/playlist_services/removeTrack.service");
-const { new_first_song } = require("./bot.playback");
 require('dotenv').config();
 
 let msg_list = [];
@@ -19,7 +18,8 @@ const clear_playlist = async () => {
             });
             tracks = await playlist_tracks();
         }
-        new_first_song();
+        set_queue_empty(true);
+        set_fallback_change(true);
         return "success"
     } catch (error) {
         console.log(error)
@@ -70,8 +70,9 @@ const cycle_playlist = async ({client}) => {
         if (res.status >= 200 && res.status < 300) {
             let id = res.data.id
             setId(id);
-            console.log(`${id}`)
-            new_first_song();
+            console.log(`New Playlist Created: ${id}`)
+            set_queue_empty(true);
+            set_fallback_change(true);
             return `${id}`
         } else {
             return "Error creating new playlist"

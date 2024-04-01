@@ -2,10 +2,10 @@ const { get_track } = require('../../services/playback_services/currentTrack.ser
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
-const { getId } = require('../../services/playlist_services/playlist_utils');
+const { getId, get_queue_change, get_fallback_change, set_queue_change, set_fallback_change } = require('../../services/playlist_services/playlist_utils');
 const { sleep } = require('../../utils');
+require('dotenv').config();
 
-let first_song = false;
 
 const slack_pause = async ({message, say}) => {
     // pause playback when message is just "pause"
@@ -19,20 +19,33 @@ const slack_pause = async ({message, say}) => {
     }
 }
 
+const non_slack_play_call = async () => {
+    const msg = '!play';
+    const say_fnc = async (text = '') => {
+        return new Promise((resolve) => resolve())
+    }
+    slack_play({message: msg, say: say_fnc})
+}
+
 const slack_play = async ({message, say}) => {
     // resume playback when message is just "play"
     if (message.text.trim() === '!play') {
         var response;
-        if (first_song) {
+        if (get_queue_change()) {
+            // Switch to queue playlist if song has been queued
             let playlist_id = getId();
             response = await play_api_call(`spotify:playlist:${playlist_id}`);
+            if (response >= 200 && response < 300) {set_queue_change(false);}
+        } else if (get_fallback_change()) {
+            // Switch to fallback playlist if queue has been cleared
+            let playlist_id = process.env.FALLBACK_PLAYLIST_ID;
+            response = await play_api_call(`spotify:playlist:${playlist_id}`);
+            if (response >= 200 && response < 300) {set_fallback_change(false);}
         } else {
+            // Otherwise just play from currrent playlist and position
             response = await play_api_call();
         }
         if (response >= 200 && response < 300) {
-            if (first_song) {
-                first_song = false;
-            }
             await say("Playback resumed");
         } else if (response === 403) {
             await say("Error 403 - Please check queue isn't empty");
@@ -40,10 +53,6 @@ const slack_play = async ({message, say}) => {
             await say(`Error - code: ${response}`);
         }
     }
-}
-
-const new_first_song = () => {
-    first_song = true;
 }
 
 const slack_skip = async ({message, say}) => {
@@ -78,6 +87,5 @@ const slack_skip = async ({message, say}) => {
 module.exports = {
     slack_pause,
     slack_play,
-    slack_skip,
-    new_first_song
+    slack_skip
 }

@@ -7,6 +7,7 @@ const { get_track } = require('../../services/playback_services/currentTrack.ser
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { shift_api_call } = require('../../services/playlist_services/moveTrack.service');
 const { sleep } = require('../../utils');
+const { get_queue_empty, set_queue_change, set_queue_empty, set_fallback_change } = require('../../services/playlist_services/playlist_utils');
 
 
 const search_func = async ({ message, say }) => {
@@ -74,6 +75,13 @@ const search_buttons = async ({ body, ack, client, logger }) => {
     // Update response based on whether song was queued
     if (response >= 200 && response < 300) {
         // 201 means song was queued successfully
+
+        // Handle playlist switching if added to empty queue
+        if (get_queue_empty()) {
+            set_queue_empty(false);
+            set_queue_change(true);
+            set_fallback_change(false);
+        }
 
         // get selected number
         const selected = body.actions[0].action_id[7];
