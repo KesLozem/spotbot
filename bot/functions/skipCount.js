@@ -1,4 +1,4 @@
-var req_skips = 1;
+var req_skips = 3;
 var cur_skips = 0;
 var skip_members = [];
 var last_voted_track;
@@ -12,7 +12,7 @@ const get_cur_skips = () => {
 }
 
 const check_member_vote = (user) => {
-    return user in skip_members
+    return (skip_members.includes(user))
 }
 
 const add_skip_vote = (user) => {
@@ -22,7 +22,7 @@ const add_skip_vote = (user) => {
 
 
 const check_skip_track = (track) => {
-    if (track === last_voted_track) {
+    if (track == last_voted_track) {
         return true;
     } else {
         skip_members = [];
@@ -31,6 +31,13 @@ const check_skip_track = (track) => {
     }
 }
 
+const set_req_skips = async ({message, say}) => {
+    console.log()
+    if (/!setskipvotes [1-9]*/.test(message.text.trim())) {
+        req_skips = message.text.slice(14);
+        await say (`Set required votes for skipping to ${req_skips}`)
+    }
+}
 
 
 module.exports = {
@@ -38,5 +45,6 @@ module.exports = {
     get_req_skips,
     check_member_vote,
     add_skip_vote,
-    check_skip_track
+    check_skip_track,
+    set_req_skips
 }
