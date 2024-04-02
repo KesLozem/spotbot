@@ -48,15 +48,15 @@ slackApp.message('!commands', slack_commands);
 slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
 
 
-// Command for testing purposes only
-slackApp.message('test', async ({message, say, client}) => {
-    if (message.text.trim() === "test") {
-        const msg = await say("test");
-        console.log(message)
-        console.log(msg)
-        // remove_msg_buttons({client})
-    }
-})
+// // Command for testing purposes only
+// slackApp.message('test', async ({message, say, client}) => {
+//     if (message.text.trim() === "test") {
+//         const msg = await say("test");
+//         console.log(message)
+//         console.log(msg)
+//         // remove_msg_buttons({client})
+//     }
+// })
 
 slackApp.message('!id', async ({message, say}) => {
     let res = await state_api_call();

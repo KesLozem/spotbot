@@ -32,7 +32,6 @@ const check_skip_track = (track) => {
 }
 
 const set_req_skips = async ({message, say}) => {
-    console.log()
     if (/!setskipvotes [1-9]*/.test(message.text.trim())) {
         req_skips = message.text.slice(14);
         await say (`Set required votes for skipping to ${req_skips}`)
