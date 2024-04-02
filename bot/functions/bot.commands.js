@@ -71,7 +71,7 @@ const slack_commands = async ({message, say}) => {
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "Skip to next track"
+                            "text": "vote to skip the currently playing track"
                         }
                     ]
                 },
@@ -92,7 +92,7 @@ const slack_commands = async ({message, say}) => {
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "Set playback device ID"
+                            "text": "Set playback device ID - use when device ID has changed (i.e. on webplayer page refresh)"
                         }
                     ]
                 },
@@ -106,6 +106,19 @@ const slack_commands = async ({message, say}) => {
                         {
                             "type": "mrkdwn",
                             "text": "Purge and reset playlist (for use when spotify stops automatic queue updates)"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!setskipvotes <value>*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Update minimum votes required to skip to <value> (must be integer >= 1)"
                         }
                     ]
                 }
