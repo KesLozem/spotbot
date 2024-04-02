@@ -15,7 +15,7 @@ const state = async (req, res) => {
             body = response.data;
             console.log(`Current Device: ${body.device.name}.\n Currently: ${body.is_playing? "playing." : "paused."}`);
             res.redirect("http://localhost:8080/");
-        }        
+        }
 
 
 

@@ -22,11 +22,11 @@ const slack_pause = async ({message, say}) => {
 }
 
 const non_slack_play_call = async () => {
-    const msg = '!play';
+    const msg = {text: '!play'}
     const say_fnc = async (text = '') => {
         return new Promise((resolve) => resolve())
     }
-    slack_play({message: msg, say: say_fnc})
+    await slack_play({message: msg, say: say_fnc})
 }
 
 const slack_play = async ({message, say}) => {
@@ -107,5 +107,6 @@ const slack_skip = async ({message, say}) => {
 module.exports = {
     slack_pause,
     slack_play,
-    slack_skip
+    slack_skip,
+    non_slack_play_call
 }

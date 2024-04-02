@@ -8,6 +8,8 @@ const { pause_api_call } = require('../../services/playback_services/pause.servi
 const { shift_api_call } = require('../../services/playlist_services/moveTrack.service');
 const { sleep } = require('../../utils');
 const { get_queue_empty, set_queue_change, set_queue_empty, set_fallback_change } = require('../../services/playlist_services/playlist_utils');
+const { state_api_call } = require('../../services/playback_services/getState.service');
+const { non_slack_play_call } = require('./bot.playback');
 
 
 const search_func = async ({ message, say }) => {
@@ -81,6 +83,12 @@ const search_buttons = async ({ body, ack, client, logger }) => {
             set_queue_empty(false);
             set_queue_change(true);
             set_fallback_change(false);
+
+            // If currently playing, make call to switch playlist
+            let response = await state_api_call();
+            if (response.status === 200 && response.data.is_playing) {
+                await non_slack_play_call();
+            }
         }
 
         // get selected number
