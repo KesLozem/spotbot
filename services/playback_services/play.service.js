@@ -18,7 +18,7 @@ const play = async (req, res) => {
     }
 }
 
-const play_api_call = async (uri = null) => {
+const play_api_call = async (uri = null, pos = null) => {
     // make call to spotify API endpoint to resume playback
 
     try {
@@ -33,9 +33,17 @@ const play_api_call = async (uri = null) => {
         };
 
         if (uri) {
-            authOptions.data = {
-                context_uri: uri
+            if (pos) {
+                authOptions.data = {
+                    context_uri: uri,
+                    offset: {'position': pos}
+                }
+            } else {
+                authOptions.data = {
+                    context_uri: uri
+                }
             }
+            
         }
 
         

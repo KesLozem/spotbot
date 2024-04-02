@@ -3,7 +3,7 @@ const { play_api_call } = require("../../services/playback_services/play.service
 const { create_api_call } = require("../../services/playlist_services/create.service");
 const { unfollow_playlist } = require("../../services/playlist_services/delete.service");
 const { playlist_tracks } = require("../../services/playlist_services/getPlaylist.service");
-const { setId, set_queue_empty, set_fallback_change } = require("../../services/playlist_services/playlist_utils");
+const { setId, set_queue_empty, set_fallback_change, set_queue_change } = require("../../services/playlist_services/playlist_utils");
 const { remove_api_call } = require("../../services/playlist_services/removeTrack.service");
 require('dotenv').config();
 
@@ -18,13 +18,18 @@ const clear_playlist = async () => {
             });
             tracks = await playlist_tracks();
         }
-        set_queue_empty(true);
-        set_fallback_change(true);
+        clear_playlist_bools();
         return "success"
     } catch (error) {
         console.log(error)
         return error
     }
+}
+
+const clear_playlist_bools = () => {
+    set_queue_empty(true);
+    set_fallback_change(true);
+    set_queue_change(false);
 }
 
 const slack_clear = async ({message, say, client}) => {
@@ -71,8 +76,7 @@ const cycle_playlist = async ({client}) => {
             let id = res.data.id
             setId(id);
             console.log(`New Playlist Created: ${id}`)
-            set_queue_empty(true);
-            set_fallback_change(true);
+            clear_playlist_bools();
             return `${id}`
         } else {
             return "Error creating new playlist"
