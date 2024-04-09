@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getAuth } = require('../auth_services/store_auth.service');
+const { setDeviceId } = require('./device.store');
 
 const state = async (req, res) => {
 
@@ -14,6 +15,7 @@ const state = async (req, res) => {
         } else if (response.status === 200) {
             body = response.data;
             console.log(`Current Device: ${body.device.name}.\n Currently: ${body.is_playing? "playing." : "paused."}`);
+            setDeviceId(body.device.id)
             res.redirect("http://localhost:8080/");
         }
 
