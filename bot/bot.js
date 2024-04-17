@@ -9,6 +9,8 @@ const { slack_queue, slack_current, queue_button } = require('./functions/bot.qu
 const { slack_clear, remove_msg_buttons, cycle_playlist, slack_reset } = require('./functions/bot.clear');
 const slack_commands = require('./functions/bot.commands');
 const { set_req_skips } = require('./functions/skipCount');
+const { refresh_call } = require('../services/auth_services/refresh_token.service');
+const { setAuth } = require('../services/auth_services/store_auth.service');
 require('dotenv').config();
 
 
@@ -59,11 +61,25 @@ slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
 // })
 
 slackApp.message('!id', async ({message, say}) => {
-    let res = await state_api_call();
-    // console.log(res)
-    setDeviceId(res.data.device.id);
-    await say(res.data.device.id);
-    await remove_msg_buttons
+    if (message.text.trim() == '!id') {
+        let res = await state_api_call();
+        // console.log(res)
+        setDeviceId(res.data.device.id);
+        await say(res.data.device.id);
+    }
+})
+
+slackApp.message('!token', async ({message}) => {
+    if (message.text.trim() == '!token') {
+        let response = await refresh_call();
+        if (response.status === 200) {
+            let access_token = response.data.access_token;
+            setAuth(access_token)
+            console.log({
+            'access_token': access_token
+            });
+        }
+    }
 })
 
 const daily_reset = async (hour) => {

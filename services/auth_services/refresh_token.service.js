@@ -72,5 +72,6 @@ const auto_refresh = async () => {
 }
 module.exports = {
   refresh,
+  refresh_call,
   auto_refresh
 };

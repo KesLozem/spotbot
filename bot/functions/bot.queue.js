@@ -88,8 +88,9 @@ const queue_button = (direction) => async ({body, ack, client, logger}) => {
         pos = Number(pos)
         let queue = await playlist_tracks(pos + 10 * skips, 10);
         if (queue.total <= pos + 10 * skips) {
+            // Trying to get next page even though no songs available
+            // Likely due to song being removed
             try {
-                //Otherwise append error to message
                 let blocks = body.message.blocks;
                 blocks.pop()
                 blocks.push({
@@ -108,6 +109,7 @@ const queue_button = (direction) => async ({body, ack, client, logger}) => {
                 logger.error(error);
             }
         } else {
+            // Otherwise display new page
             let blocks = format_queue_results(pos, queue.items, queue.total, skips);
             try {
                 await client.chat.update({
@@ -122,7 +124,6 @@ const queue_button = (direction) => async ({body, ack, client, logger}) => {
     } catch (error) {
         if ('response' in error) {
             try {
-                //Otherwise append error to message
                 let blocks = body.message.blocks;
                 blocks.pop()
                 blocks.push({
