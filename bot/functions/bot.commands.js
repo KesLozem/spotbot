@@ -1,7 +1,6 @@
 const slack_commands = async ({message, say}) => {
-    if (message.text.trim() === '!commands') {
-        blocks = {
-            "blocks": [
+    if (message.text.slice(0,9) === '!commands') {
+        blocks = [
                 {
                     "type": "header",
                     "text": {
@@ -121,11 +120,38 @@ const slack_commands = async ({message, say}) => {
                             "text": "Update minimum votes required to skip to <value> (must be integer >= 1)"
                         }
                     ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!token*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Refresh spotify API access token"
+                        }
+                    ]
                 }
             ]
-        }
 
-        await say(blocks)
+        if (message.text.trim() == '!commands') {
+            msg = {
+                "blocks": blocks.slice(0,6)
+            }
+            await say(msg)
+        } else if (message.text.trim() == '!commands -dev') {
+            msg = {
+                "blocks": blocks.slice(6)
+            }
+            await say(msg)
+        } else if (message.text.trim() == '!commands -all') {
+            msg = {
+                "blocks": blocks
+            }
+            await say(msg)
+        }
     }
 }
 
