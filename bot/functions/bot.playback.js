@@ -1,5 +1,6 @@
 const { get_track, track } = require('../../services/playback_services/currentTrack.service');
 const { get_queue } = require('../../services/playback_services/getQueue.service');
+const { state_api_call } = require('../../services/playback_services/getState.service');
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
@@ -64,13 +65,21 @@ const slack_play = async ({message, say}) => {
             response = await play_api_call(`spotify:playlist:${playlist_id}`, pos);
             if (response >= 200 && response < 300) {set_fallback_change(false);}
         } else {
+            state = await state_api_call();
+            if (state.status === 200 || state.status > 204) {
+                if (state.data.is_playing) {
+                    await say("Spotify is already playing.")
+                    return;
+                }
+            } else {
+                await say(`Error - code: ${state.status}`)
+                return;
+            }
             // Otherwise just play from currrent playlist and position
             response = await play_api_call();
         }
         if (response >= 200 && response < 300) {
             await say("Playback resumed");
-        } else if (response === 403) {
-            await say("Error 403 - Please check queue isn't empty");
         } else {
             await say(`Error - code: ${response}`);
         }
