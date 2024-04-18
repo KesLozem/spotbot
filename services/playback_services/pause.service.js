@@ -36,6 +36,7 @@ const pause_api_call = async () => {
         
     } catch (error) {
         if ('response' in error) {
+            console.log(error.response)
             return error.response.status;
         } else {
             console.log(error);

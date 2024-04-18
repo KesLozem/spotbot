@@ -66,12 +66,12 @@ const slack_play = async ({message, say}) => {
             if (response >= 200 && response < 300) {set_fallback_change(false);}
         } else {
             state = await state_api_call();
-            if (state.status === 200 || state.status > 204) {
+            if (state.status === 200) {
                 if (state.data.is_playing) {
                     await say("Spotify is already playing.")
                     return;
                 }
-            } else {
+            } else if (state.status > 400) {
                 await say(`Error - code: ${state.status}`)
                 return;
             }
