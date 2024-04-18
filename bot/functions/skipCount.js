@@ -1,4 +1,4 @@
-var req_skips = 3;
+var req_skips = 2;
 var cur_skips = 0;
 var skip_members = [];
 var last_voted_track;

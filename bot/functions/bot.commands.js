@@ -87,6 +87,19 @@ const slack_commands = async ({message, say}) => {
                     "fields": [
                         {
                             "type": "mrkdwn",
+                            "text": "*!togglebuttonlock*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Toggle verification when search buttons are clicked - allow/disallow users to interact with others' searches"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
                             "text": "*!id*"
                         },
                         {

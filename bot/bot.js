@@ -1,5 +1,5 @@
 const { App } = require('@slack/bolt');
-const { search_func, cancel_search, search_buttons, remove_button, bring_next } = require('./functions/bot.search');
+const { search_func, cancel_search, search_buttons, remove_button, bring_next, toggle_ffa } = require('./functions/bot.search');
 
 const { wait_until } = require('../utils');
 const { state_api_call } = require('../services/playback_services/getState.service');
@@ -46,6 +46,8 @@ slackApp.message('!clear', slack_clear);
 slackApp.message('!reset', slack_reset);
 
 slackApp.message('!commands', slack_commands);
+
+slackApp.message('!togglebuttonlock', toggle_ffa);
 
 slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
 
