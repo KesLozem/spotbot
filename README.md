@@ -16,9 +16,8 @@ Spotbot rebuild:
     CLIENT_ID
     CLIENT_SECRET
     REDIRECT_URI
-    USER_ID 
-    DEFAULT_PLAYLIST_ID 
-    DEFAULT_DEVICE_ID
+    USER_ID
+    FALLBACK_PLAYLIST_ID
 
     for Slack:
 
