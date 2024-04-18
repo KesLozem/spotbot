@@ -1,7 +1,6 @@
 const slack_commands = async ({message, say}) => {
-    if (message.text.trim() === '!commands') {
-        blocks = {
-            "blocks": [
+    if (message.text.slice(0,9) === '!commands') {
+        blocks = [
                 {
                     "type": "header",
                     "text": {
@@ -71,7 +70,7 @@ const slack_commands = async ({message, say}) => {
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "Skip to next track"
+                            "text": "vote to skip the currently playing track"
                         }
                     ]
                 },
@@ -88,11 +87,24 @@ const slack_commands = async ({message, say}) => {
                     "fields": [
                         {
                             "type": "mrkdwn",
+                            "text": "*!togglebuttonlock*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Toggle verification when search buttons are clicked - allow/disallow users to interact with others' searches"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
                             "text": "*!id*"
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "Set playback device ID"
+                            "text": "Set playback device ID - use when device ID has changed (i.e. on webplayer page refresh)"
                         }
                     ]
                 },
@@ -108,11 +120,51 @@ const slack_commands = async ({message, say}) => {
                             "text": "Purge and reset playlist (for use when spotify stops automatic queue updates)"
                         }
                     ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!setskipvotes <value>*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Update minimum votes required to skip to <value> (must be integer >= 1)"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!token*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Refresh spotify API access token"
+                        }
+                    ]
                 }
             ]
-        }
 
-        await say(blocks)
+        if (message.text.trim() == '!commands') {
+            msg = {
+                "blocks": blocks.slice(0,6)
+            }
+            await say(msg)
+        } else if (message.text.trim() == '!commands -dev') {
+            msg = {
+                "blocks": blocks.slice(6)
+            }
+            await say(msg)
+        } else if (message.text.trim() == '!commands -all') {
+            msg = {
+                "blocks": blocks
+            }
+            await say(msg)
+        }
     }
 }
 

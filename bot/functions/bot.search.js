@@ -7,7 +7,11 @@ const { get_track } = require('../../services/playback_services/currentTrack.ser
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { shift_api_call } = require('../../services/playlist_services/moveTrack.service');
 const { sleep } = require('../../utils');
+const { get_queue_empty, set_queue_change, set_queue_empty, set_fallback_change } = require('../../services/playlist_services/playlist_utils');
+const { state_api_call } = require('../../services/playback_services/getState.service');
+const { non_slack_play_call } = require('./bot.playback');
 
+let button_ffa = false;
 
 const search_func = async ({ message, say }) => {
     /** Search for a song on spotify. If valid search, will return
@@ -22,11 +26,13 @@ const search_func = async ({ message, say }) => {
         } else if (message.text.slice(0,8) == "!search ") {
             // Extract query and search spotify API
             const query = message.text.slice(8);
+            // get user
+            const user = message.user
             const search_res = await(search_aux(query));
             if ('status' in search_res) {
                 await say(`Error - code: ${search_res.status}`);
             } else {
-                const res = format_search(search_res, query);    
+                const res = format_search(search_res, query, user);    
                 await say(res);
             }
         }
@@ -42,6 +48,12 @@ const cancel_search = async ({ body, ack, client, logger }) => {
     await ack();
 
     try{
+        let search_user = body.actions[0].value;
+        let click_user = body.user.id;
+        let allowed = await validate_button_clicker(click_user, search_user, client, body)
+        if (!allowed) {
+            return;
+        }
         await client.chat.update({
             "channel": body.channel.id,
             "ts": body.message.ts,
@@ -65,8 +77,23 @@ const search_buttons = async ({ body, ack, client, logger }) => {
 
     await ack();
 
-    // get track uri
-    const uri = body.actions[0].value
+    console.log(body.actions[0])
+
+
+    // Extract relevant information
+    const b_val = body.actions[0].value
+    // Original Search User
+    const search_user = b_val.split(';')[1]
+    // Button clicker
+    const click_user = body.user.id;
+    // track uri
+    const uri = b_val.split(';')[0]
+
+    // Ensure button click is allowed
+    let allowed = await validate_button_clicker(click_user, search_user, client, body);
+    if (!allowed) {
+        return;
+    }
 
     // try to queue uri, get response
     const response = await add_aux(uri);
@@ -74,6 +101,19 @@ const search_buttons = async ({ body, ack, client, logger }) => {
     // Update response based on whether song was queued
     if (response >= 200 && response < 300) {
         // 201 means song was queued successfully
+
+        // Handle playlist switching if added to empty queue
+        if (get_queue_empty()) {
+            set_queue_empty(false);
+            set_queue_change(true);
+            set_fallback_change(false);
+
+            // If currently playing, make call to switch playlist
+            let response = await state_api_call();
+            if (response.status === 200 && response.data.is_playing) {
+                await non_slack_play_call();
+            }
+        }
 
         // get selected number
         const selected = body.actions[0].action_id[7];
@@ -117,7 +157,7 @@ const search_buttons = async ({ body, ack, client, logger }) => {
                                     "emoji": true,
                                     "text": `Remove`
                                 },
-                                "value": uri,
+                                "value": b_val,
                                 "style": 'danger',
                                 "action_id": `remove`                
                             }, 
@@ -128,7 +168,7 @@ const search_buttons = async ({ body, ack, client, logger }) => {
                                     "emoji": true,
                                     "text": `Bring to next`
                                 },
-                                "value": uri,
+                                "value": b_val,
                                 "style": 'primary',
                                 "action_id": `bring_forward`                
                             }
@@ -165,7 +205,21 @@ const search_buttons = async ({ body, ack, client, logger }) => {
 
 const remove_button = async ({body, ack, client, logger}) => {
     await ack();
-    const uri = body.actions[0].value // track uri to remove
+    
+    // Extract relevant information
+    const b_val = body.actions[0].value
+    // Original Search User
+    const search_user = b_val.split(';')[1]
+    // Button clicker
+    const click_user = body.user.id;
+    // track uri
+    const uri = b_val.split(';')[0]
+
+    // Ensure button click is allowed
+    let allowed = await validate_button_clicker(click_user, search_user, client, body);
+    if (!allowed) {
+        return;
+    }
 
     // remove track from playlist
     const response = await remove_api_call(uri)
@@ -215,7 +269,22 @@ const remove_button = async ({body, ack, client, logger}) => {
 
 const bring_next = async ({body, ack, client, logger}) => {
     await ack();
-    const uri = body.actions[0].value
+
+    // Extract relevant information
+    const b_val = body.actions[0].value
+    // Original Search User
+    const search_user = b_val.split(';')[1]
+    // Button clicker
+    const click_user = body.user.id;
+    // track uri
+    const uri = b_val.split(';')[0]
+
+    // Ensure button click is allowed
+    let allowed = await validate_button_clicker(click_user, search_user, client, body);
+    if (!allowed) {
+        return;
+    }
+
     let [track_pos, track_list] = await find_pos(uri)
     if (track_pos == -1) {
         // If not in playlist, update message to reflect that song was removed
@@ -273,7 +342,48 @@ const bring_next = async ({body, ack, client, logger}) => {
     }
 }
 
-const format_search = (tracks, query) => {
+const toggle_ffa = async ({message, say}) => {
+    if (message.text.trim() == '!togglebuttonlock') {
+        if (button_ffa) {
+            button_ffa = false;
+            await say("Interacting with others' searches has been disabled")
+        } else {
+            button_ffa = true;
+            await say(`<@${message.user}> has enabled interacting with other people's searches!`)
+        }
+    }
+}
+
+const validate_button_clicker = async (action_user, original_user, client, body) => {
+    // Check if button clicker is original person who searched for song
+    if (button_ffa) {
+        return true
+    } else if (action_user == original_user) {
+        return true
+    } else {
+        try {
+            // If not, update message to reflect this
+            let blocks = body.message.blocks;
+            blocks.push({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `<@${action_user}> tried to interact with <@${original_user}>'s search`,
+                }
+            })
+            await client.chat.update({
+                "channel": body.channel.id,
+                "ts": body.message.ts,
+                "blocks": blocks
+            })
+            return false;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+const format_search = (tracks, query, user) => {
     /** Format Results as slack block
      * tracks: list of up to 5 found tracks, each as an object
      * query: query term
@@ -325,7 +435,7 @@ const format_search = (tracks, query) => {
                 "emoji": true,
                 "text": `${acc}`
             },
-            "value": track.uri,
+            "value": `${track.uri};${user}`,
             "action_id": `button_${acc}`                
         })
     });
@@ -355,7 +465,7 @@ const format_search = (tracks, query) => {
                     "text": `Cancel`
                 },
                 "style": "danger",
-                "value": "cancel",
+                "value": user,
                 "action_id": `cancel_button`                
             }]
         })
@@ -370,5 +480,6 @@ module.exports = {
     search_buttons,
     remove_button,
     bring_next,
-    format_search
+    format_search,
+    toggle_ffa
 }

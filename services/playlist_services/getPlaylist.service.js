@@ -15,11 +15,16 @@ const playlist = async (req, res) => {
     }
 }
 
-const playlist_tracks = async (start_pos = 0, limit = 50) => {
+const playlist_tracks = async (start_pos = 0, limit = 50, uri = null) => {
     
     // Make call to spotify API using relevant information
     let access_token = getAuth();
-    let playlist_id = getId(); // default = spotbot playlist
+    var playlist_id;
+    if (uri) {
+        playlist_id = uri;
+    } else {
+        playlist_id = getId();
+    }
     let authOptions = {
         url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
         method: 'get',

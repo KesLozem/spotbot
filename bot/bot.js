@@ -1,16 +1,16 @@
 const { App } = require('@slack/bolt');
-const { search_func, cancel_search, search_buttons, remove_button, bring_next } = require('./functions/bot.search');
+const { search_func, cancel_search, search_buttons, remove_button, bring_next, toggle_ffa } = require('./functions/bot.search');
 
-const { get_track } = require('../services/playback_services/currentTrack.service');
-const { get_queue } = require('../services/playback_services/getQueue.service');
-const { sleep, wait_until } = require('../utils');
+const { wait_until } = require('../utils');
 const { state_api_call } = require('../services/playback_services/getState.service');
 const { setDeviceId } = require('../services/playback_services/device.store');
 const { slack_pause, slack_play, slack_skip } = require('./functions/bot.playback');
 const { slack_queue, slack_current, queue_button } = require('./functions/bot.queue');
 const { slack_clear, remove_msg_buttons, cycle_playlist, slack_reset } = require('./functions/bot.clear');
-const find_pos = require('../services/playlist_services/findposition');
 const slack_commands = require('./functions/bot.commands');
+const { set_req_skips } = require('./functions/skipCount');
+const { refresh_call } = require('../services/auth_services/refresh_token.service');
+const { setAuth } = require('../services/auth_services/store_auth.service');
 require('dotenv').config();
 
 
@@ -21,12 +21,6 @@ const slackApp = new App({
     socketMode: true,
     appToken: process.env.SLACK_APP_TOKEN
   });
-
-slackApp.message('hello', async ({ message, say }) => {
-
-
-    await say(`Hey there <@${message.user}>!`);
-});
 
 
 // !search and relevant buttons
@@ -53,25 +47,41 @@ slackApp.message('!reset', slack_reset);
 
 slackApp.message('!commands', slack_commands);
 
+slackApp.message('!togglebuttonlock', toggle_ffa);
+
+slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
+
 
 // // Command for testing purposes only
 // slackApp.message('test', async ({message, say, client}) => {
 //     if (message.text.trim() === "test") {
 //         const msg = await say("test");
+//         console.log(message)
 //         console.log(msg)
-//         remove_msg_buttons({client})
-//     } else if (message.text === "test1") {
-//         let pos = await find_pos("spotify:track:6GCjzkTRSmht3DtU0UtkPd")
-//         console.log(pos)
+//         // remove_msg_buttons({client})
 //     }
 // })
 
 slackApp.message('!id', async ({message, say}) => {
-    let res = await state_api_call();
-    // console.log(res)
-    setDeviceId(res.data.device.id);
-    await say(res.data.device.id);
-    await remove_msg_buttons
+    if (message.text.trim() == '!id') {
+        let res = await state_api_call();
+        // console.log(res)
+        setDeviceId(res.data.device.id);
+        await say(res.data.device.id);
+    }
+})
+
+slackApp.message('!token', async ({message}) => {
+    if (message.text.trim() == '!token') {
+        let response = await refresh_call();
+        if (response.status === 200) {
+            let access_token = response.data.access_token;
+            setAuth(access_token)
+            console.log({
+            'access_token': access_token
+            });
+        }
+    }
 })
 
 const daily_reset = async (hour) => {
