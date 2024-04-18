@@ -1,6 +1,6 @@
 require('dotenv').config;
 
-var playlist_id = process.env.TEST_PLAYLIST_ID;
+var playlist_id = null;
 
 var change_to_fallback = true;
 var empty_queue = true;
