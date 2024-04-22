@@ -75,10 +75,23 @@ const slack_commands = async ({message, say}) => {
                     ]
                 },
                 {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!clear*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Remove all songs added to queue and change back to fallback playlist (DOperatePlaylist)"
+                        }
+                    ]
+                },
+                {
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": "Dev - avoid unless necessary",
+                        "text": "Dev",
                         "emoji": true
                     }
                 },
@@ -151,12 +164,12 @@ const slack_commands = async ({message, say}) => {
 
         if (message.text.trim() == '!commands') {
             msg = {
-                "blocks": blocks.slice(0,6)
+                "blocks": blocks.slice(0,7)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -dev') {
             msg = {
-                "blocks": blocks.slice(6)
+                "blocks": blocks.slice(7)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -all') {
