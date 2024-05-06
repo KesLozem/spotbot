@@ -85,10 +85,15 @@ slackApp.message('!token', async ({message}) => {
 })
 
 const daily_reset = async (hour) => {
-    await wait_until(hour);
-    await cycle_playlist({client: slackApp.client})
-    await sleep(5)
-    daily_reset(hour)
+    try {
+        await wait_until(hour);
+        await cycle_playlist({client: slackApp.client})
+        await sleep(5)
+        daily_reset(hour)
+    } catch (error) {
+        console.log(error)
+    }
+    
 }
 
 module.exports = {
