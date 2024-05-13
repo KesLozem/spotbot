@@ -76,6 +76,23 @@ const get_playlist_change = async () => {
     }
 }
 
+const switch_states = () => {
+    if (cur_state === playlist_states.fallback) {
+        if (empty_queue) {
+            return "invalid";
+        }
+        cur_state = playlist_states.queue;
+        change_to_queue = true;
+        change_to_fallback = false;
+        return playlist_states.queue
+    } else if (cur_state === playlist_states.queue) {
+        cur_state = playlist_states.fallback
+        change_to_fallback = true;
+        change_to_queue = false;
+        return playlist_states.fallback;
+    }
+}
+
 const queue_test = () => {
     if (empty_queue) {
         empty_queue = false;
@@ -86,12 +103,14 @@ const queue_test = () => {
     return false;    
 }
 
-const set_queue_change = (bool) => {
-    change_to_queue = bool
+const queue_played = () => {
+    change_to_queue = false;
+    cur_state = playlist_states.queue;
 }
 
-const set_fallback_change = (bool) => {
-    change_to_fallback = bool
+const fallback_played = () => {
+    change_to_fallback = false;
+    cur_state = playlist_states.fallback;
 }
 
 const daily_fallback_reset = async () => {
@@ -103,10 +122,11 @@ const daily_fallback_reset = async () => {
 
 module.exports = {
     playlist_states,
-    set_queue_change,
-    set_fallback_change,
+    queue_played,
+    fallback_played,
     clear_playlist_vars,
     get_playlist_change,
+    switch_states,
     queue_test,
     daily_fallback_reset
 }

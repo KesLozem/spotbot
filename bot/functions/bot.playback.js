@@ -5,7 +5,7 @@ const { pause_api_call } = require('../../services/playback_services/pause.servi
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
 const { getId, getFallbackId, } = require('../../services/playlist_services/playlist_utils');
-const {set_queue_change, set_fallback_change, get_playlist_change, playlist_states } = require('../../services/playlist_services/playlist.chooser');
+const {set_queue_change, set_fallback_change, get_playlist_change, playlist_states, queue_played, fallback_played } = require('../../services/playlist_services/playlist.chooser');
 const { check_skip_track, check_member_vote, add_skip_vote, get_cur_skips, get_req_skips } = require('./skipCount');
 require('dotenv').config();
 
@@ -43,14 +43,14 @@ const slack_play = async ({message, say}) => {
             let playlist_id = getId()
             response = await play_api_call(`spotify:playlist:${playlist_id}`, pos);
             if (response >= 200 && response < 300) {
-                set_queue_change(false);
+                queue_played();
             }
         } else if (to_play === playlist_states.fallback) {
             // Switch to fallback playlist if required
             let playlist_id = getFallbackId();
             response = await play_api_call(`spotify:playlist:${playlist_id}`, pos);
             if (response >= 200 && response < 300) {
-                set_fallback_change(false);
+                fallback_played();
             }
         } else {
             // Otherwise just paly

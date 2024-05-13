@@ -13,6 +13,7 @@ const { refresh_call } = require('../services/auth_services/refresh_token.servic
 const { setAuth } = require('../services/auth_services/store_auth.service');
 const { setFallbackId } = require('../services/playlist_services/playlist_utils');
 const { set_fallback_pos, daily_fallback_reset } = require('../services/playlist_services/playlist.chooser');
+const { slack_switch } = require('./functions/bot.playlist');
 require('dotenv').config();
 
 
@@ -50,6 +51,8 @@ slackApp.message('!reset', slack_reset);
 slackApp.message('!commands', slack_commands);
 
 slackApp.message('!togglebuttonlock', toggle_ffa);
+
+slackApp.message('!switch', slack_switch);
 
 slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
 
