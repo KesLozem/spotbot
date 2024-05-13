@@ -4,12 +4,11 @@ const { state_api_call } = require('../../services/playback_services/getState.se
 const { pause_api_call } = require('../../services/playback_services/pause.service');
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
-const find_pos = require('../../services/playlist_services/findposition');
-const { getId, get_queue_change, get_fallback_change, set_queue_change, set_fallback_change, set_fallback_pos, get_fallback_pos } = require('../../services/playlist_services/playlist_utils');
-const { sleep } = require('../../utils');
+const { getId, getFallbackId, } = require('../../services/playlist_services/playlist_utils');
+const {set_queue_change, set_fallback_change, get_playlist_change, playlist_states } = require('../../services/playlist_services/playlist.chooser');
 const { check_skip_track, check_member_vote, add_skip_vote, get_cur_skips, get_req_skips } = require('./skipCount');
 require('dotenv').config();
-const fallback_id = process.env.FALLBACK_PLAYLIST_ID
+
 
 
 const slack_pause = async ({message, say}) => {
@@ -36,35 +35,25 @@ const slack_play = async ({message, say}) => {
     // resume playback when message is just "play"
     if (message.text.trim() === '!play') {
         var response;
-        if (get_queue_change()) {
+        var to_play, pos;
+        [to_play, pos] = await get_playlist_change();
 
-            // Get current position in fallback playlist
-            let current = await get_track();
-            if (current.status === 204) {
-                await pause_api_call();
-                current = await get_track();
-            }
-            var pos = 0;
-            if (current.status >= 200 && current.status < 300 && current.status != 204) {
-                [pos, _] = await find_pos(current.data.item.uri, null, fallback_id);
-            }
-            // Switch to queue playlist if song has been queued
-            let playlist_id = getId();
-            response = await play_api_call(`spotify:playlist:${playlist_id}`);
-            if (response >= 200 && response < 300) {
-                if (pos == -1) {
-                    pos = 0;
-                }
-                set_queue_change(false);
-                set_fallback_pos(pos)
-            }
-        } else if (get_fallback_change()) {
-            // Switch to fallback playlist if queue has been cleared
-            let playlist_id = fallback_id;
-            let pos = get_fallback_pos();
+        if (to_play === playlist_states.queue) {
+            // Switch to queue playlist if required
+            let playlist_id = getId()
             response = await play_api_call(`spotify:playlist:${playlist_id}`, pos);
-            if (response >= 200 && response < 300) {set_fallback_change(false);}
+            if (response >= 200 && response < 300) {
+                set_queue_change(false);
+            }
+        } else if (to_play === playlist_states.fallback) {
+            // Switch to fallback playlist if required
+            let playlist_id = getFallbackId();
+            response = await play_api_call(`spotify:playlist:${playlist_id}`, pos);
+            if (response >= 200 && response < 300) {
+                set_fallback_change(false);
+            }
         } else {
+            // Otherwise just paly
             state = await state_api_call();
             if (state.status === 200) {
                 if (state.data.is_playing) {

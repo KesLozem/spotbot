@@ -11,6 +11,8 @@ const slack_commands = require('./functions/bot.commands');
 const { set_req_skips } = require('./functions/skipCount');
 const { refresh_call } = require('../services/auth_services/refresh_token.service');
 const { setAuth } = require('../services/auth_services/store_auth.service');
+const { setFallbackId } = require('../services/playlist_services/playlist_utils');
+const { set_fallback_pos, daily_fallback_reset } = require('../services/playlist_services/playlist.chooser');
 require('dotenv').config();
 
 
@@ -56,6 +58,7 @@ slackApp.message(/!setskipvotes [1-9]*/, set_req_skips);
 // slackApp.message('test', async ({message, say, client}) => {
 //     if (message.text.trim() === "test") {
 //         const msg = await say("test");
+//         await daily_fallback_reset();
 //         console.log(message)
 //         console.log(msg)
 //         // remove_msg_buttons({client})
@@ -88,6 +91,8 @@ const daily_reset = async (hour) => {
     try {
         await wait_until(hour);
         await cycle_playlist({client: slackApp.client})
+        setFallbackId(process.env.FALLBACK_PLAYLIST_ID)
+        await daily_fallback_reset();
         await sleep(5)
         daily_reset(hour)
     } catch (error) {
