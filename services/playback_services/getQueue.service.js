@@ -32,7 +32,7 @@ const get_queue = async () => {
 
     // extract and return track
     // console.log(response.data.queue)
-    return response.data.queue
+    return response.data
 
 }
 

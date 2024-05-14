@@ -5,8 +5,8 @@ const { pause_api_call } = require('../../services/playback_services/pause.servi
 const { play_api_call } = require('../../services/playback_services/play.service');
 const { skip_api_call } = require('../../services/playback_services/skip.service');
 const { getId, getFallbackId, } = require('../../services/playlist_services/playlist_utils');
-const {set_queue_change, set_fallback_change, get_playlist_change, playlist_states, queue_played, fallback_played } = require('../../services/playlist_services/playlist.chooser');
-const { check_skip_track, check_member_vote, add_skip_vote, get_cur_skips, get_req_skips } = require('./skipCount');
+const { get_playlist_change, playlist_states, queue_played, fallback_played } = require('../../services/playlist_services/playlist.chooser');
+const { check_skip_track, check_member_vote, add_skip_vote, get_cur_skips, get_req_skips, get_skipped_track } = require('./skipCount');
 require('dotenv').config();
 
 
@@ -112,9 +112,14 @@ const slack_skip = async ({message, say}) => {
                 let response = await skip_api_call();
                 if (response.status >= 200 && response.status < 300) {
                     try {
-                        // Update delay - new song will actually be first in queue
                         let queue = await get_queue();
-                        await say(`Successfully skipped. Now Playing: ${queue[0].name}`)
+                        let track = queue.currently_playing
+                        if (track.uri == get_skipped_track()) {
+                            console.log(queue.queue)
+                            track = queue.queue[0]
+                        }
+                        // Update delay - new song will actually be first in queue
+                        await say(`Successfully skipped. Now Playing: ${track.name}`)
                     } catch (error) {
                         // If error getting queue
                         await say(`Successfully skipped current track. However, issue occurred getting new track - code ${error.response.status}`)

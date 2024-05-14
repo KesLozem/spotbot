@@ -25,6 +25,10 @@ const slack_switch = async ({message, say}) => {
     }
 }
 
+const current_playlist = async ({message, say}) => {
+    
+}
+
 const fallback_search = async ({ message, say }) => {
     /** Search for a palylist on spotify. If valid search, will return
      * list of 5 options, each with a button to select
@@ -203,6 +207,7 @@ const playlist_buttons = async ({ body, ack, client, logger }) => {
     }
    
 }
+
 
 module.exports = {
     slack_switch,
