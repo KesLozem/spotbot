@@ -114,6 +114,19 @@ const slack_commands = async ({message, say}) => {
                     ]
                 },
                 {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!playlist*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Get current playlist name, currently playing track and up to next 3 items in queue"
+                        }
+                    ]
+                },
+                {
                     "type": "header",
                     "text": {
                         "type": "plain_text",
@@ -203,12 +216,12 @@ const slack_commands = async ({message, say}) => {
 
         if (message.text.trim() == '!commands') {
             msg = {
-                "blocks": blocks.slice(0,9)
+                "blocks": blocks.slice(0,10)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -dev') {
             msg = {
-                "blocks": blocks.slice(9)
+                "blocks": blocks.slice(10)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -all') {
