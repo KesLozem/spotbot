@@ -167,10 +167,6 @@ const format_playlist_search = (playlists, query, user) => {
                 {
                     "type": "mrkdwn",
                     "text": `*Playlist ${acc}*\n ${playlist.name}`
-                },
-                {
-                    "type": "mrkdwn",
-                    "text": `*Artist(s):*\n ${playlist.artists}`
                 }
             ]
         });
