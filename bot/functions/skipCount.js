@@ -38,6 +38,9 @@ const set_req_skips = async ({message, say}) => {
     }
 }
 
+const get_skipped_track = () => {
+    return last_voted_track;
+}
 
 module.exports = {
     get_cur_skips,
@@ -45,5 +48,6 @@ module.exports = {
     check_member_vote,
     add_skip_vote,
     check_skip_track,
-    set_req_skips
+    set_req_skips,
+    get_skipped_track
 }

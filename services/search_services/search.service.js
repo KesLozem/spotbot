@@ -25,7 +25,7 @@ const search = async (req, res) => {
     }
 }
 
-let search_aux = async ( query ) => {
+let search_aux = async ( query, search_type = 'track' ) => {
     /** Call spotify API */
 
     try{
@@ -41,7 +41,7 @@ let search_aux = async ( query ) => {
             },
             params: {
                 'q': query,
-                'type': 'track',
+                'type': search_type,
                 'limit': NUM_DESIRED_RESULTS
             },
             json: true
@@ -51,7 +51,7 @@ let search_aux = async ( query ) => {
         const response = await axios(authOptions);
         
         // return extracted response
-        return await extract_response(response);
+        return extract_response(response, search_type);
     } catch (error) {
         if ('response' in error) {
             return error.response;
@@ -60,11 +60,18 @@ let search_aux = async ( query ) => {
     }
 }
 
-const extract_response = (response) => {
+const extract_response = (response, search_type) => {
     /** Extract required information from spotify API response */
     if (response.status === 200) {
-    // Check correct status
-        tracks = response.data.tracks
+        // Check correct status
+
+        var items;
+        if (search_type == 'track') {
+            items = response.data.tracks.items
+        } else if (search_type == 'playlist') {
+            items = response.data.playlists.items
+        }
+        
         // console.log(response.data.tracks.total)
         clearResults(); // Clear table in storeResults js
 
@@ -72,28 +79,28 @@ const extract_response = (response) => {
         let results = [];
         
         // Extract information from each track separately
-        tracks.items.forEach( track => {
+        items.forEach( item => {
             var artist_list;
             try {
                 // Format artists as string in case of multiple artists
-                artist_list = track.artists.slice(1).reduce( 
+                artist_list = item.artists.slice(1).reduce( 
                     (acc, artist) => acc + `, ${artist.name}`,
-                    `${track.artists[0].name}` 
+                    `${item.artists[0].name}` 
                 )
             } catch (error) {
                 artist_list = 'None';
             }
             // console.log(`
-            // Name: ${track.name}
+            // Name: ${item.name}
             // Artist(s): ${artist_list}
-            // Spotify URI: ${track.uri}`)
-            addResult(track.uri) // add to storeResults table
+            // Spotify URI: ${item.uri}`)
+            addResult(item.uri) // add to storeResults table
 
             // extract name, artists and uri
             results.push({
-                name: track.name,
+                name: item.name,
                 artists: artist_list,
-                uri: track.uri
+                uri: item.uri
             })
         });
         return(results)
