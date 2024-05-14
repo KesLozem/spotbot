@@ -96,7 +96,20 @@ const slack_commands = async ({message, say}) => {
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "Remove all songs added to queue and change back to fallback playlist (DOperatePlaylist)"
+                            "text": "Remove all songs added to queue and change back to fallback playlist (default = DOperatePlaylist)"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!switch*"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Switch between fallback playlist and today's queue playlist"
                         }
                     ]
                 },
@@ -118,6 +131,19 @@ const slack_commands = async ({message, say}) => {
                         {
                             "type": "mrkdwn",
                             "text": "Toggle verification when search buttons are clicked - allow/disallow users to interact with others' searches"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*!setfallback* <query>"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "Replace fallback playlist for the day - searches with 5 results from given query"
                         }
                     ]
                 },
@@ -177,12 +203,12 @@ const slack_commands = async ({message, say}) => {
 
         if (message.text.trim() == '!commands') {
             msg = {
-                "blocks": blocks.slice(0,8)
+                "blocks": blocks.slice(0,9)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -dev') {
             msg = {
-                "blocks": blocks.slice(8)
+                "blocks": blocks.slice(9)
             }
             await say(msg)
         } else if (message.text.trim() == '!commands -all') {
