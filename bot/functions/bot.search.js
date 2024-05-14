@@ -479,5 +479,6 @@ module.exports = {
     remove_button,
     bring_next,
     format_search,
-    toggle_ffa
+    toggle_ffa,
+    validate_button_clicker
 }
