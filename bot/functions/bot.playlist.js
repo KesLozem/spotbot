@@ -1,6 +1,10 @@
+const { get_track } = require("../../services/playback_services/currentTrack.service");
+const { get_queue } = require("../../services/playback_services/getQueue.service");
 const { state_api_call } = require("../../services/playback_services/getState.service");
-const { switch_states, playlist_states } = require("../../services/playlist_services/playlist.chooser");
-const { setFallbackId } = require("../../services/playlist_services/playlist_utils");
+const { pause_api_call } = require("../../services/playback_services/pause.service");
+const { playlist_name } = require("../../services/playlist_services/getPlaylist.service");
+const { switch_states, playlist_states, get_playlist_state } = require("../../services/playlist_services/playlist.chooser");
+const { setFallbackId, getId, getFallbackId } = require("../../services/playlist_services/playlist_utils");
 const { search_aux } = require("../../services/search_services/search.service");
 const { non_slack_play_call } = require("./bot.playback");
 const { validate_button_clicker } = require("./bot.search");
@@ -26,7 +30,75 @@ const slack_switch = async ({message, say}) => {
 }
 
 const current_playlist = async ({message, say}) => {
-    
+    try {
+        if (message.text.trim() === '!playlist') {
+
+            let res = await get_track();
+            if (res.status === 204) {
+                await pause_api_call();
+            }
+
+            let cur_id = (get_playlist_state() == playlist_states.queue? getId() : getFallbackId());
+
+            let name = await playlist_name(cur_id);
+            let queue = await get_queue();
+
+            res = {
+                "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": `Current Playlist: ${name} `,
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": `Currently playing: ${queue.currently_playing.name}`
+                        }
+                    ]
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "Up Next:"
+                        }
+                    ]
+                }
+                ]
+            }
+
+            let acc = 0;
+            while (acc < 3 && acc < queue.queue.length) {
+                res.blocks.push(
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": queue.queue[acc].name
+                            }
+                        ]
+                    }
+                )
+                acc++;
+            }
+
+            await say(res)
+
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 const fallback_search = async ({ message, say }) => {
@@ -212,5 +284,6 @@ const playlist_buttons = async ({ body, ack, client, logger }) => {
 module.exports = {
     slack_switch,
     fallback_search,
-    playlist_buttons
+    playlist_buttons,
+    current_playlist
 }

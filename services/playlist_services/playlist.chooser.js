@@ -119,6 +119,10 @@ const daily_fallback_reset = async () => {
     fallback_pos = Math.floor(Math.random() * data.total)
 }
 
+const get_playlist_state = () => {
+    return cur_state;
+}
+
 
 module.exports = {
     playlist_states,
@@ -128,5 +132,6 @@ module.exports = {
     get_playlist_change,
     switch_states,
     queue_test,
-    daily_fallback_reset
+    daily_fallback_reset,
+    get_playlist_state
 }
